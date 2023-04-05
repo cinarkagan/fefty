@@ -1,7 +1,7 @@
 repeat task.wait() until game:IsLoaded()
 local GuiLibrary
-local baseDirectory = (shared.VapePrivate and "vapeprivate/" or "vape/")
-local vapeInjected = true
+local baseDirectory = (shared.feftyPrivate and "feftyprivate/" or "fefty/")
+local feftyInjected = true
 local oldRainbow = false
 local errorPopupShown = false
 local redownloadedAssets = false
@@ -27,7 +27,7 @@ local function displayErrorPopup(text, funclist)
 	local prompt = ErrorPrompt.new("Default")
 	prompt._hideErrorCode = true
 	local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-	prompt:setErrorTitle("Vape")
+	prompt:setErrorTitle("fefty")
 	local funcs = {}
 	local num = 0
 	for i,v in pairs(funclist) do 
@@ -53,8 +53,8 @@ local function displayErrorPopup(text, funclist)
 	setidentity(oldidentity)
 end
 
-local function vapeGithubRequest(scripturl)
-	if not isfile("vape/"..scripturl) then
+local function feftyGithubRequest(scripturl)
+	if not isfile("fefty/"..scripturl) then
 		local suc, res
 		task.delay(15, function()
 			if not res and not errorPopupShown then 
@@ -62,18 +62,18 @@ local function vapeGithubRequest(scripturl)
 				displayErrorPopup("The connection to github is taking a while, Please be patient.")
 			end
 		end)
-		suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
+		suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("fefty/commithash.txt").."/"..scripturl, true) end)
 		if not suc or res == "404: Not Found" then
-			displayErrorPopup("Failed to connect to github : vape/"..scripturl.." : "..res)
+			displayErrorPopup("Failed to connect to github : fefty/"..scripturl.." : "..res)
 			error(res)
 		end
 		if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
-		writefile("vape/"..scripturl, res)
+		writefile("fefty/"..scripturl, res)
 	end
-	return readfile("vape/"..scripturl)
+	return readfile("fefty/"..scripturl)
 end
 
-local function downloadVapeAsset(path)
+local function downloadfeftyAsset(path)
 	if not isfile(path) then
 		task.spawn(function()
 			local textlabel = Instance.new("TextLabel")
@@ -89,7 +89,7 @@ local function downloadVapeAsset(path)
 			repeat task.wait() until isfile(path)
 			textlabel:Destroy()
 		end)
-		local suc, req = pcall(function() return vapeGithubRequest(path:gsub("vape/assets", "assets")) end)
+		local suc, req = pcall(function() return feftyGithubRequest(path:gsub("fefty/assets", "assets")) end)
         if suc and req then
 		    writefile(path, req)
         else
@@ -99,75 +99,75 @@ local function downloadVapeAsset(path)
 	return getcustomasset(path) 
 end
 
-assert(not shared.VapeExecuted, "Vape Already Injected")
-shared.VapeExecuted = true
+assert(not shared.feftyExecuted, "fefty Already Injected")
+shared.feftyExecuted = true
 
-for i,v in pairs({baseDirectory:gsub("/", ""), "vape", "vape/Libraries", "vape/CustomModules", "vape/Profiles", baseDirectory.."Profiles", "vape/assets"}) do 
+for i,v in pairs({baseDirectory:gsub("/", ""), "fefty", "fefty/Libraries", "fefty/CustomModules", "fefty/Profiles", baseDirectory.."Profiles", "fefty/assets"}) do 
 	if not isfolder(v) then makefolder(v) end
 end
 task.spawn(function()
-	local success, assetver = pcall(function() return vapeGithubRequest("assetsversion.txt") end)
-	if not isfile("vape/assetsversion.txt") then writefile("vape/assetsversion.txt", "0") end
-	if success and assetver > readfile("vape/assetsversion.txt") then
+	local success, assetver = pcall(function() return feftyGithubRequest("assetsversion.txt") end)
+	if not isfile("fefty/assetsversion.txt") then writefile("fefty/assetsversion.txt", "0") end
+	if success and assetver > readfile("fefty/assetsversion.txt") then
 		redownloadedAssets = true
-		if isfolder("vape/assets") and not shared.VapeDeveloper then
+		if isfolder("fefty/assets") and not shared.feftyDeveloper then
 			if delfolder then
-				delfolder("vape/assets")
-				makefolder("vape/assets")
+				delfolder("fefty/assets")
+				makefolder("fefty/assets")
 			end
 		end
-		writefile("vape/assetsversion.txt", assetver)
+		writefile("fefty/assetsversion.txt", assetver)
 	end
 end)
-if not isfile("vape/CustomModules/cachechecked.txt") then
+if not isfile("fefty/CustomModules/cachechecked.txt") then
 	local isNotCached = false
-	for i,v in pairs({"vape/Universal.lua", "vape/MainScript.lua", "vape/GuiLibrary.lua"}) do 
+	for i,v in pairs({"fefty/Universal.lua", "fefty/MainScript.lua", "fefty/GuiLibrary.lua"}) do 
 		if isfile(v) and not readfile(v):find("--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.") then
 			isNotCached = true
 		end 
 	end
-	if isfolder("vape/CustomModules") then 
-		for i,v in pairs(listfiles("vape/CustomModules")) do 
+	if isfolder("fefty/CustomModules") then 
+		for i,v in pairs(listfiles("fefty/CustomModules")) do 
 			if isfile(v) and not readfile(v):find("--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.") then
 				isNotCached = true
 			end 
 		end
 	end
-	if isNotCached and not shared.VapeDeveloper then
-		displayErrorPopup("Vape has detected uncached files, If you have CustomModules click no, else click yes.", {No = function() end, Yes = function()
-			for i,v in pairs({"vape/Universal.lua", "vape/MainScript.lua", "vape/GuiLibrary.lua"}) do 
+	if isNotCached and not shared.feftyDeveloper then
+		displayErrorPopup("fefty has detected uncached files, If you have CustomModules click no, else click yes.", {No = function() end, Yes = function()
+			for i,v in pairs({"fefty/Universal.lua", "fefty/MainScript.lua", "fefty/GuiLibrary.lua"}) do 
 				if isfile(v) and not readfile(v):find("--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.") then
 					delfile(v)
 				end 
 			end
-			for i,v in pairs(listfiles("vape/CustomModules")) do 
+			for i,v in pairs(listfiles("fefty/CustomModules")) do 
 				if isfile(v) and not readfile(v):find("--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.") then
 					local last = v:split('\\')
 					last = last[#last]
-					local suc, publicrepo = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("vape/commithash.txt").."/CustomModules/"..last) end)
+					local suc, publicrepo = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("fefty/commithash.txt").."/CustomModules/"..last) end)
 					if suc and publicrepo and publicrepo ~= "404: Not Found" then
-						writefile("vape/CustomModules/"..last, "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..publicrepo)
+						writefile("fefty/CustomModules/"..last, "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..publicrepo)
 					end
 				end 
 			end
 		end})
 	end
-	writefile("vape/CustomModules/cachechecked.txt", "verified")
+	writefile("fefty/CustomModules/cachechecked.txt", "verified")
 end
 
-GuiLibrary = loadstring(vapeGithubRequest("GuiLibrary.lua"))()
+GuiLibrary = loadstring(feftyGithubRequest("GuiLibrary.lua"))()
 shared.GuiLibrary = GuiLibrary
 
 local saveSettingsLoop = coroutine.create(function()
 	repeat
 		GuiLibrary.SaveSettings()
         task.wait(10)
-	until not vapeInjected or not GuiLibrary
+	until not feftyInjected or not GuiLibrary
 end)
 
 task.spawn(function()
 	local image = Instance.new("ImageLabel")
-	image.Image = downloadVapeAsset("vape/assets/CombatIcon.png")
+	image.Image = downloadfeftyAsset("fefty/assets/CombatIcon.png")
 	image.Position = UDim2.new()
 	image.BackgroundTransparency = 1
 	image.Size = UDim2.fromOffset(100, 100)
@@ -179,10 +179,10 @@ task.spawn(function()
     end)
 	task.spawn(function()
 		task.wait(15)
-		if image and image.ContentImageSize == Vector2.zero and (not errorPopupShown) and (not redownloadedAssets) and (not isfile("vape/assets/check3.txt")) then 
+		if image and image.ContentImageSize == Vector2.zero and (not errorPopupShown) and (not redownloadedAssets) and (not isfile("fefty/assets/check3.txt")) then 
             errorPopupShown = true
             displayErrorPopup("Assets failed to load, Try another executor (executor : "..(identifyexecutor and identifyexecutor() or "Unknown")..")", {OK = function()
-                writefile("vape/assets/check3.txt", "")
+                writefile("fefty/assets/check3.txt", "")
             end})
         end
 	end)
@@ -191,73 +191,73 @@ end)
 local GUI = GuiLibrary.CreateMainWindow()
 local Combat = GuiLibrary.CreateWindow({
 	Name = "Combat", 
-	Icon = "vape/assets/CombatIcon.png", 
+	Icon = "fefty/assets/CombatIcon.png", 
 	IconSize = 15
 })
 local Blatant = GuiLibrary.CreateWindow({
 	Name = "Blatant", 
-	Icon = "vape/assets/BlatantIcon.png", 
+	Icon = "fefty/assets/BlatantIcon.png", 
 	IconSize = 16
 })
 local Render = GuiLibrary.CreateWindow({
 	Name = "Render", 
-	Icon = "vape/assets/RenderIcon.png", 
+	Icon = "fefty/assets/RenderIcon.png", 
 	IconSize = 17
 })
 local Utility = GuiLibrary.CreateWindow({
 	Name = "Utility", 
-	Icon = "vape/assets/UtilityIcon.png", 
+	Icon = "fefty/assets/UtilityIcon.png", 
 	IconSize = 17
 })
 local World = GuiLibrary.CreateWindow({
 	Name = "World", 
-	Icon = "vape/assets/WorldIcon.png", 
+	Icon = "fefty/assets/WorldIcon.png", 
 	IconSize = 16
 })
 local Friends = GuiLibrary.CreateWindow2({
 	Name = "Friends", 
-	Icon = "vape/assets/FriendsIcon.png", 
+	Icon = "fefty/assets/FriendsIcon.png", 
 	IconSize = 17
 })
 local Targets = GuiLibrary.CreateWindow2({
 	Name = "Targets", 
-	Icon = "vape/assets/FriendsIcon.png", 
+	Icon = "fefty/assets/FriendsIcon.png", 
 	IconSize = 17
 })
 local Profiles = GuiLibrary.CreateWindow2({
 	Name = "Profiles", 
-	Icon = "vape/assets/ProfilesIcon.png", 
+	Icon = "fefty/assets/ProfilesIcon.png", 
 	IconSize = 19
 })
 GUI.CreateDivider()
 GUI.CreateButton({
 	Name = "Combat", 
 	Function = function(callback) Combat.SetVisible(callback) end, 
-	Icon = "vape/assets/CombatIcon.png", 
+	Icon = "fefty/assets/CombatIcon.png", 
 	IconSize = 15
 })
 GUI.CreateButton({
 	Name = "Blatant", 
 	Function = function(callback) Blatant.SetVisible(callback) end, 
-	Icon = "vape/assets/BlatantIcon.png", 
+	Icon = "fefty/assets/BlatantIcon.png", 
 	IconSize = 16
 })
 GUI.CreateButton({
 	Name = "Render", 
 	Function = function(callback) Render.SetVisible(callback) end, 
-	Icon = "vape/assets/RenderIcon.png", 
+	Icon = "fefty/assets/RenderIcon.png", 
 	IconSize = 17
 })
 GUI.CreateButton({
 	Name = "Utility", 
 	Function = function(callback) Utility.SetVisible(callback) end, 
-	Icon = "vape/assets/UtilityIcon.png", 
+	Icon = "fefty/assets/UtilityIcon.png", 
 	IconSize = 17
 })
 GUI.CreateButton({
 	Name = "World", 
 	Function = function(callback) World.SetVisible(callback) end, 
-	Icon = "vape/assets/WorldIcon.png", 
+	Icon = "fefty/assets/WorldIcon.png", 
 	IconSize = 16
 })
 GUI.CreateDivider("MISC")
@@ -359,7 +359,7 @@ ProfilesTextList = Profiles.CreateTextList({
 	end, 
 	RemoveFunction = function(profileIndex, profileName) 
 		if profileName ~= "default" and profileName ~= GuiLibrary.CurrentProfile then 
-			pcall(function() delfile(baseDirectory.."Profiles/"..profileName..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt") end)
+			pcall(function() delfile(baseDirectory.."Profiles/"..profileName..(shared.CustomSavefefty or game.PlaceId)..".feftyprofile.txt") end)
 			GuiLibrary.Profiles[profileName] = nil
 		else
 			table.insert(ProfilesTextList.ObjectList, profileName)
@@ -385,7 +385,7 @@ ProfilesTextList = Profiles.CreateTextList({
 		bindbkg.Visible = GuiLibrary.Profiles[profileName].Keybind ~= ""
 		bindbkg.Parent = profileObject
 		local bindimg = Instance.new("ImageLabel")
-		bindimg.Image = downloadVapeAsset("vape/assets/KeybindIcon.png")
+		bindimg.Image = downloadfeftyAsset("fefty/assets/KeybindIcon.png")
 		bindimg.BackgroundTransparency = 1
 		bindimg.Size = UDim2.new(0, 12, 0, 12)
 		bindimg.Position = UDim2.new(0, 4, 0, 5)
@@ -449,14 +449,14 @@ ProfilesTextList = Profiles.CreateTextList({
 			end
 		end)
 		bindbkg.MouseEnter:Connect(function() 
-			bindimg.Image = downloadVapeAsset("vape/assets/PencilIcon.png") 
+			bindimg.Image = downloadfeftyAsset("fefty/assets/PencilIcon.png") 
 			bindimg.Visible = true
 			bindtext.Visible = false
 			bindbkg.Size = UDim2.new(0, 20, 0, 21)
 			bindbkg.Position = UDim2.new(1, -50, 0, 6)
 		end)
 		bindbkg.MouseLeave:Connect(function() 
-			bindimg.Image = downloadVapeAsset("vape/assets/KeybindIcon.png")
+			bindimg.Image = downloadfeftyAsset("fefty/assets/KeybindIcon.png")
 			if GuiLibrary.Profiles[profileName].Keybind ~= "" then
 				bindimg.Visible = false
 				bindtext.Visible = true
@@ -510,7 +510,7 @@ local OnlineProfilesButtonImage = Instance.new("ImageLabel")
 OnlineProfilesButtonImage.BackgroundTransparency = 1
 OnlineProfilesButtonImage.Position = UDim2.new(0, 14, 0, 7)
 OnlineProfilesButtonImage.Size = UDim2.new(0, 17, 0, 16)
-OnlineProfilesButtonImage.Image = downloadVapeAsset("vape/assets/OnlineProfilesButton.png")
+OnlineProfilesButtonImage.Image = downloadfeftyAsset("fefty/assets/OnlineProfilesButton.png")
 OnlineProfilesButtonImage.ImageColor3 = Color3.fromRGB(121, 121, 121)
 OnlineProfilesButtonImage.ZIndex = 1
 OnlineProfilesButtonImage.Active = false
@@ -531,7 +531,7 @@ OnlineProfilesExitButton.Name = "OnlineProfilesExitButton"
 OnlineProfilesExitButton.ImageColor3 = Color3.fromRGB(121, 121, 121)
 OnlineProfilesExitButton.Size = UDim2.new(0, 24, 0, 24)
 OnlineProfilesExitButton.AutoButtonColor = false
-OnlineProfilesExitButton.Image = downloadVapeAsset("vape/assets/ExitIcon1.png")
+OnlineProfilesExitButton.Image = downloadfeftyAsset("fefty/assets/ExitIcon1.png")
 OnlineProfilesExitButton.Visible = true
 OnlineProfilesExitButton.Position = UDim2.new(1, -31, 0, 8)
 OnlineProfilesExitButton.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
@@ -548,7 +548,7 @@ end)
 local OnlineProfilesFrameShadow = Instance.new("ImageLabel")
 OnlineProfilesFrameShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 OnlineProfilesFrameShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-OnlineProfilesFrameShadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
+OnlineProfilesFrameShadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
 OnlineProfilesFrameShadow.BackgroundTransparency = 1
 OnlineProfilesFrameShadow.ZIndex = -1
 OnlineProfilesFrameShadow.Size = UDim2.new(1, 6, 1, 6)
@@ -558,7 +558,7 @@ OnlineProfilesFrameShadow.SliceCenter = Rect.new(10, 10, 118, 118)
 OnlineProfilesFrameShadow.Parent = OnlineProfilesFrame
 local OnlineProfilesFrameIcon = Instance.new("ImageLabel")
 OnlineProfilesFrameIcon.Size = UDim2.new(0, 19, 0, 16)
-OnlineProfilesFrameIcon.Image = downloadVapeAsset("vape/assets/ProfilesIcon.png")
+OnlineProfilesFrameIcon.Image = downloadfeftyAsset("fefty/assets/ProfilesIcon.png")
 OnlineProfilesFrameIcon.Name = "WindowIcon"
 OnlineProfilesFrameIcon.BackgroundTransparency = 1
 OnlineProfilesFrameIcon.Position = UDim2.new(0, 10, 0, 13)
@@ -627,15 +627,15 @@ OnlineProfilesButton.MouseButton1Click:Connect(function()
 	GuiLibrary.MainGui.ScaledGui.ClickGui.Visible = false
 	if not profilesLoaded then
 		local onlineprofiles = {}
-		local saveplaceid = tostring(shared.CustomSaveVape or game.PlaceId)
+		local saveplaceid = tostring(shared.CustomSavefefty or game.PlaceId)
         local success, result = pcall(function()
-            return game:GetService("HttpService"):JSONDecode(game:HttpGet("https://raw.githubusercontent.com/cinarkagan/VapeProfiles/main/Profiles/"..saveplaceid.."/profilelist.txt", true))
+            return game:GetService("HttpService"):JSONDecode(game:HttpGet("https://raw.githubusercontent.com/cinarkagan/feftyProfiles/main/Profiles/"..saveplaceid.."/profilelist.txt", true))
         end)
 		for i,v in pairs(success and result or {}) do 
 			onlineprofiles[i] = v
 		end
 		for i2,v2 in pairs(onlineprofiles) do
-			local profileurl = "https://raw.githubusercontent.com/cinarkagan/VapeProfiles/main/Profiles/"..saveplaceid.."/"..v2.OnlineProfileName
+			local profileurl = "https://raw.githubusercontent.com/cinarkagan/feftyProfiles/main/Profiles/"..saveplaceid.."/"..v2.OnlineProfileName
 			local profilebox = Instance.new("Frame")
 			profilebox.BackgroundColor3 = Color3.fromRGB(31, 30, 31)
 			profilebox.Parent = OnlineProfilesList
@@ -686,7 +686,7 @@ OnlineProfilesButton.MouseButton1Click:Connect(function()
 				profiledownload.BackgroundColor3 = Color3.fromRGB(31, 30, 31)
 			end)
 			profiledownload.MouseButton1Click:Connect(function()
-				writefile(baseDirectory.."Profiles/"..v2.ProfileName..saveplaceid..".vapeprofile.txt", game:HttpGet(profileurl, true))
+				writefile(baseDirectory.."Profiles/"..v2.ProfileName..saveplaceid..".feftyprofile.txt", game:HttpGet(profileurl, true))
 				GuiLibrary.Profiles[v2.ProfileName] = {Keybind = "", Selected = false}
 				local profiles = {}
 				for i,v in pairs(GuiLibrary.Profiles) do 
@@ -716,13 +716,13 @@ GUI.CreateDivider()
 
 local TextGUI = GuiLibrary.CreateCustomWindow({
 	Name = "Text GUI", 
-	Icon = "vape/assets/TextGUIIcon1.png", 
+	Icon = "fefty/assets/TextGUIIcon1.png", 
 	IconSize = 21
 })
 local TextGUICircleObject = {CircleList = {}}
 GUI.CreateCustomToggle({
 	Name = "Text GUI", 
-	Icon = "vape/assets/TextGUIIcon3.png",
+	Icon = "fefty/assets/TextGUIIcon3.png",
 	Function = function(callback) TextGUI.SetVisible(callback) end,
 	Priority = 2
 })	
@@ -733,114 +733,114 @@ local TextGUIBackgroundToggle = {Enabled = false}
 local TextGUIObjects = {Logo = {}, Labels = {}, ShadowLabels = {}, Backgrounds = {}}
 local TextGUIConnections = {}
 local TextGUIFormatted = {}
-local VapeLogoFrame = Instance.new("Frame")
-VapeLogoFrame.BackgroundTransparency = 1
-VapeLogoFrame.Size = UDim2.new(1, 0, 1, 0)
-VapeLogoFrame.Parent = TextGUI.GetCustomChildren()
-local VapeLogo = Instance.new("ImageLabel")
-VapeLogo.Parent = VapeLogoFrame
-VapeLogo.Name = "Logo"
-VapeLogo.Size = UDim2.new(0, 100, 0, 27)
-VapeLogo.Position = UDim2.new(1, -140, 0, 3)
-VapeLogo.BackgroundColor3 = Color3.new()
-VapeLogo.BorderSizePixel = 0
-VapeLogo.BackgroundTransparency = 1
-VapeLogo.Visible = true
-VapeLogo.Image = downloadVapeAsset("vape/assets/VapeLogo3.png")
-local VapeLogoV4 = Instance.new("ImageLabel")
-VapeLogoV4.Parent = VapeLogo
-VapeLogoV4.Size = UDim2.new(0, 41, 0, 24)
-VapeLogoV4.Name = "Logo2"
-VapeLogoV4.Position = UDim2.new(1, 0, 0, 1)
-VapeLogoV4.BorderSizePixel = 0
-VapeLogoV4.BackgroundColor3 = Color3.new()
-VapeLogoV4.BackgroundTransparency = 1
-VapeLogoV4.Image = downloadVapeAsset("vape/assets/VapeLogo4.png")
-local VapeLogoShadow = VapeLogo:Clone()
-VapeLogoShadow.ImageColor3 = Color3.new()
-VapeLogoShadow.ImageTransparency = 0.5
-VapeLogoShadow.ZIndex = 0
-VapeLogoShadow.Position = UDim2.new(0, 1, 0, 1)
-VapeLogoShadow.Visible = false
-VapeLogoShadow.Parent = VapeLogo
-VapeLogoShadow.Logo2.ImageColor3 = Color3.new()
-VapeLogoShadow.Logo2.ZIndex = 0
-VapeLogoShadow.Logo2.ImageTransparency = 0.5
-local VapeLogoGradient = Instance.new("UIGradient")
-VapeLogoGradient.Rotation = 90
-VapeLogoGradient.Parent = VapeLogo
-local VapeLogoGradient2 = Instance.new("UIGradient")
-VapeLogoGradient2.Rotation = 90
-VapeLogoGradient2.Parent = VapeLogoV4
-local VapeText = Instance.new("TextLabel")
-VapeText.Parent = VapeLogoFrame
-VapeText.Size = UDim2.new(1, 0, 1, 0)
-VapeText.Position = UDim2.new(1, -154, 0, 35)
-VapeText.TextColor3 = Color3.new(1, 1, 1)
-VapeText.RichText = true
-VapeText.BackgroundTransparency = 1
-VapeText.TextXAlignment = Enum.TextXAlignment.Left
-VapeText.TextYAlignment = Enum.TextYAlignment.Top
-VapeText.BorderSizePixel = 0
-VapeText.BackgroundColor3 = Color3.new()
-VapeText.Font = Enum.Font.SourceSans
-VapeText.Text = ""
-VapeText.TextSize = 23
-local VapeTextExtra = Instance.new("TextLabel")
-VapeTextExtra.Name = "ExtraText"
-VapeTextExtra.Parent = VapeText
-VapeTextExtra.Size = UDim2.new(1, 0, 1, 0)
-VapeTextExtra.Position = UDim2.new(0, 1, 0, 1)
-VapeTextExtra.BorderSizePixel = 0
-VapeTextExtra.Visible = false
-VapeTextExtra.ZIndex = 0
-VapeTextExtra.Text = ""
-VapeTextExtra.BackgroundTransparency = 1
-VapeTextExtra.TextTransparency = 0.5
-VapeTextExtra.TextXAlignment = Enum.TextXAlignment.Left
-VapeTextExtra.TextYAlignment = Enum.TextYAlignment.Top
-VapeTextExtra.TextColor3 = Color3.new()
-VapeTextExtra.Font = Enum.Font.SourceSans
-VapeTextExtra.TextSize = 23
-local VapeCustomText = Instance.new("TextLabel")
-VapeCustomText.TextSize = 30
-VapeCustomText.Font = Enum.Font.GothamBold
-VapeCustomText.Size = UDim2.new(1, 0, 1, 0)
-VapeCustomText.BackgroundTransparency = 1
-VapeCustomText.Position = UDim2.new(0, 0, 0, 35)
-VapeCustomText.TextXAlignment = Enum.TextXAlignment.Left
-VapeCustomText.TextYAlignment = Enum.TextYAlignment.Top
-VapeCustomText.Text = ""
-VapeCustomText.Parent = VapeLogoFrame
-local VapeCustomTextShadow = VapeCustomText:Clone()
-VapeCustomTextShadow.ZIndex = -1
-VapeCustomTextShadow.Size = UDim2.new(1, 0, 1, 0)
-VapeCustomTextShadow.TextTransparency = 0.5
-VapeCustomTextShadow.TextColor3 = Color3.new()
-VapeCustomTextShadow.Position = UDim2.new(0, 1, 0, 1)
-VapeCustomTextShadow.Parent = VapeCustomText
-VapeCustomText:GetPropertyChangedSignal("TextXAlignment"):Connect(function()
-	VapeCustomTextShadow.TextXAlignment = VapeCustomText.TextXAlignment
+local feftyLogoFrame = Instance.new("Frame")
+feftyLogoFrame.BackgroundTransparency = 1
+feftyLogoFrame.Size = UDim2.new(1, 0, 1, 0)
+feftyLogoFrame.Parent = TextGUI.GetCustomChildren()
+local feftyLogo = Instance.new("ImageLabel")
+feftyLogo.Parent = feftyLogoFrame
+feftyLogo.Name = "Logo"
+feftyLogo.Size = UDim2.new(0, 100, 0, 27)
+feftyLogo.Position = UDim2.new(1, -140, 0, 3)
+feftyLogo.BackgroundColor3 = Color3.new()
+feftyLogo.BorderSizePixel = 0
+feftyLogo.BackgroundTransparency = 1
+feftyLogo.Visible = true
+feftyLogo.Image = downloadfeftyAsset("fefty/assets/feftyLogo3.png")
+local feftyLogoV4 = Instance.new("ImageLabel")
+feftyLogoV4.Parent = feftyLogo
+feftyLogoV4.Size = UDim2.new(0, 41, 0, 24)
+feftyLogoV4.Name = "Logo2"
+feftyLogoV4.Position = UDim2.new(1, 0, 0, 1)
+feftyLogoV4.BorderSizePixel = 0
+feftyLogoV4.BackgroundColor3 = Color3.new()
+feftyLogoV4.BackgroundTransparency = 1
+feftyLogoV4.Image = downloadfeftyAsset("fefty/assets/feftyLogo4.png")
+local feftyLogoShadow = feftyLogo:Clone()
+feftyLogoShadow.ImageColor3 = Color3.new()
+feftyLogoShadow.ImageTransparency = 0.5
+feftyLogoShadow.ZIndex = 0
+feftyLogoShadow.Position = UDim2.new(0, 1, 0, 1)
+feftyLogoShadow.Visible = false
+feftyLogoShadow.Parent = feftyLogo
+feftyLogoShadow.Logo2.ImageColor3 = Color3.new()
+feftyLogoShadow.Logo2.ZIndex = 0
+feftyLogoShadow.Logo2.ImageTransparency = 0.5
+local feftyLogoGradient = Instance.new("UIGradient")
+feftyLogoGradient.Rotation = 90
+feftyLogoGradient.Parent = feftyLogo
+local feftyLogoGradient2 = Instance.new("UIGradient")
+feftyLogoGradient2.Rotation = 90
+feftyLogoGradient2.Parent = feftyLogoV4
+local feftyText = Instance.new("TextLabel")
+feftyText.Parent = feftyLogoFrame
+feftyText.Size = UDim2.new(1, 0, 1, 0)
+feftyText.Position = UDim2.new(1, -154, 0, 35)
+feftyText.TextColor3 = Color3.new(1, 1, 1)
+feftyText.RichText = true
+feftyText.BackgroundTransparency = 1
+feftyText.TextXAlignment = Enum.TextXAlignment.Left
+feftyText.TextYAlignment = Enum.TextYAlignment.Top
+feftyText.BorderSizePixel = 0
+feftyText.BackgroundColor3 = Color3.new()
+feftyText.Font = Enum.Font.SourceSans
+feftyText.Text = ""
+feftyText.TextSize = 23
+local feftyTextExtra = Instance.new("TextLabel")
+feftyTextExtra.Name = "ExtraText"
+feftyTextExtra.Parent = feftyText
+feftyTextExtra.Size = UDim2.new(1, 0, 1, 0)
+feftyTextExtra.Position = UDim2.new(0, 1, 0, 1)
+feftyTextExtra.BorderSizePixel = 0
+feftyTextExtra.Visible = false
+feftyTextExtra.ZIndex = 0
+feftyTextExtra.Text = ""
+feftyTextExtra.BackgroundTransparency = 1
+feftyTextExtra.TextTransparency = 0.5
+feftyTextExtra.TextXAlignment = Enum.TextXAlignment.Left
+feftyTextExtra.TextYAlignment = Enum.TextYAlignment.Top
+feftyTextExtra.TextColor3 = Color3.new()
+feftyTextExtra.Font = Enum.Font.SourceSans
+feftyTextExtra.TextSize = 23
+local feftyCustomText = Instance.new("TextLabel")
+feftyCustomText.TextSize = 30
+feftyCustomText.Font = Enum.Font.GothamBold
+feftyCustomText.Size = UDim2.new(1, 0, 1, 0)
+feftyCustomText.BackgroundTransparency = 1
+feftyCustomText.Position = UDim2.new(0, 0, 0, 35)
+feftyCustomText.TextXAlignment = Enum.TextXAlignment.Left
+feftyCustomText.TextYAlignment = Enum.TextYAlignment.Top
+feftyCustomText.Text = ""
+feftyCustomText.Parent = feftyLogoFrame
+local feftyCustomTextShadow = feftyCustomText:Clone()
+feftyCustomTextShadow.ZIndex = -1
+feftyCustomTextShadow.Size = UDim2.new(1, 0, 1, 0)
+feftyCustomTextShadow.TextTransparency = 0.5
+feftyCustomTextShadow.TextColor3 = Color3.new()
+feftyCustomTextShadow.Position = UDim2.new(0, 1, 0, 1)
+feftyCustomTextShadow.Parent = feftyCustomText
+feftyCustomText:GetPropertyChangedSignal("TextXAlignment"):Connect(function()
+	feftyCustomTextShadow.TextXAlignment = feftyCustomText.TextXAlignment
 end)
-local VapeBackground = Instance.new("Frame")
-VapeBackground.BackgroundTransparency = 1
-VapeBackground.BorderSizePixel = 0
-VapeBackground.BackgroundColor3 = Color3.new()
-VapeBackground.Size = UDim2.new(1, 0, 1, 0)
-VapeBackground.Visible = false 
-VapeBackground.Parent = VapeLogoFrame
-VapeBackground.ZIndex = 0
-local VapeBackgroundList = Instance.new("UIListLayout")
-VapeBackgroundList.FillDirection = Enum.FillDirection.Vertical
-VapeBackgroundList.SortOrder = Enum.SortOrder.LayoutOrder
-VapeBackgroundList.Padding = UDim.new(0, 0)
-VapeBackgroundList.Parent = VapeBackground
-local VapeBackgroundTable = {}
-local VapeScale = Instance.new("UIScale")
-VapeScale.Parent = VapeLogoFrame
+local feftyBackground = Instance.new("Frame")
+feftyBackground.BackgroundTransparency = 1
+feftyBackground.BorderSizePixel = 0
+feftyBackground.BackgroundColor3 = Color3.new()
+feftyBackground.Size = UDim2.new(1, 0, 1, 0)
+feftyBackground.Visible = false 
+feftyBackground.Parent = feftyLogoFrame
+feftyBackground.ZIndex = 0
+local feftyBackgroundList = Instance.new("UIListLayout")
+feftyBackgroundList.FillDirection = Enum.FillDirection.Vertical
+feftyBackgroundList.SortOrder = Enum.SortOrder.LayoutOrder
+feftyBackgroundList.Padding = UDim.new(0, 0)
+feftyBackgroundList.Parent = feftyBackground
+local feftyBackgroundTable = {}
+local feftyScale = Instance.new("UIScale")
+feftyScale.Parent = feftyLogoFrame
 
 local function TextGUIUpdate()
-	local scaledgui = vapeInjected and GuiLibrary.MainGui.ScaledGui
+	local scaledgui = feftyInjected and GuiLibrary.MainGui.ScaledGui
 	if scaledgui and scaledgui.Visible then
 		local formattedText = ""
 		local moduleList = {}
@@ -860,7 +860,7 @@ local function TextGUIUpdate()
 			table.sort(moduleList, function(a, b) return a.Text:lower() < b.Text:lower() end)
 		else
 			table.sort(moduleList, function(a, b) 
-				return textService:GetTextSize(a.Text..a.ExtraText, VapeText.TextSize, VapeText.Font, Vector2.new(1000000, 1000000)).X > textService:GetTextSize(b.Text..b.ExtraText, VapeText.TextSize, VapeText.Font, Vector2.new(1000000, 1000000)).X 
+				return textService:GetTextSize(a.Text..a.ExtraText, feftyText.TextSize, feftyText.Font, Vector2.new(1000000, 1000000)).X > textService:GetTextSize(b.Text..b.ExtraText, feftyText.TextSize, feftyText.Font, Vector2.new(1000000, 1000000)).X 
 			end)
 		end
 
@@ -878,30 +878,30 @@ local function TextGUIUpdate()
 		end
 
 		TextGUIFormatted = moduleList
-		VapeTextExtra.Text = formattedText
-        VapeText.Size = UDim2.fromOffset(154, (formattedText ~= "" and textService:GetTextSize(formattedText, VapeText.TextSize, VapeText.Font, Vector2.new(1000000, 1000000)) or Vector2.zero).Y)
+		feftyTextExtra.Text = formattedText
+        feftyText.Size = UDim2.fromOffset(154, (formattedText ~= "" and textService:GetTextSize(formattedText, feftyText.TextSize, feftyText.Font, Vector2.new(1000000, 1000000)) or Vector2.zero).Y)
 
         if TextGUI.GetCustomChildren().Parent then
             if (TextGUI.GetCustomChildren().Parent.Position.X.Offset + TextGUI.GetCustomChildren().Parent.Size.X.Offset / 2) >= (gameCamera.ViewportSize.X / 2) then
-                VapeText.TextXAlignment = Enum.TextXAlignment.Right
-                VapeTextExtra.TextXAlignment = Enum.TextXAlignment.Right
-                VapeTextExtra.Position = UDim2.fromOffset(5, 1)
-                VapeLogo.Position = UDim2.new(1, -142, 0, 8)
-                VapeText.Position = UDim2.new(1, -158, 0, (VapeLogo.Visible and (TextGUIBackgroundToggle.Enabled and 41 or 35) or 5) + (VapeCustomText.Visible and 25 or 0) - 23)
-                VapeCustomText.Position = UDim2.fromOffset(0, VapeLogo.Visible and 35 or 0)
-                VapeCustomText.TextXAlignment = Enum.TextXAlignment.Right
-                VapeBackgroundList.HorizontalAlignment = Enum.HorizontalAlignment.Right
-                VapeBackground.Position = VapeText.Position + UDim2.fromOffset(-56, 2 + 23)
+                feftyText.TextXAlignment = Enum.TextXAlignment.Right
+                feftyTextExtra.TextXAlignment = Enum.TextXAlignment.Right
+                feftyTextExtra.Position = UDim2.fromOffset(5, 1)
+                feftyLogo.Position = UDim2.new(1, -142, 0, 8)
+                feftyText.Position = UDim2.new(1, -158, 0, (feftyLogo.Visible and (TextGUIBackgroundToggle.Enabled and 41 or 35) or 5) + (feftyCustomText.Visible and 25 or 0) - 23)
+                feftyCustomText.Position = UDim2.fromOffset(0, feftyLogo.Visible and 35 or 0)
+                feftyCustomText.TextXAlignment = Enum.TextXAlignment.Right
+                feftyBackgroundList.HorizontalAlignment = Enum.HorizontalAlignment.Right
+                feftyBackground.Position = feftyText.Position + UDim2.fromOffset(-56, 2 + 23)
             else
-                VapeText.TextXAlignment = Enum.TextXAlignment.Left
-                VapeTextExtra.TextXAlignment = Enum.TextXAlignment.Left
-                VapeTextExtra.Position = UDim2.fromOffset(5, 1)
-                VapeLogo.Position = UDim2.fromOffset(2, 8)
-                VapeText.Position = UDim2.fromOffset(6, (VapeLogo.Visible and (TextGUIBackgroundToggle.Enabled and 41 or 35) or 5) + (VapeCustomText.Visible and 25 or 0) - 23)
-				VapeCustomText.Position = UDim2.fromOffset(0, VapeLogo.Visible and 35 or 0)
-				VapeCustomText.TextXAlignment = Enum.TextXAlignment.Left
-                VapeBackgroundList.HorizontalAlignment = Enum.HorizontalAlignment.Left
-                VapeBackground.Position = VapeText.Position + UDim2.fromOffset(-1, 2 + 23)
+                feftyText.TextXAlignment = Enum.TextXAlignment.Left
+                feftyTextExtra.TextXAlignment = Enum.TextXAlignment.Left
+                feftyTextExtra.Position = UDim2.fromOffset(5, 1)
+                feftyLogo.Position = UDim2.fromOffset(2, 8)
+                feftyText.Position = UDim2.fromOffset(6, (feftyLogo.Visible and (TextGUIBackgroundToggle.Enabled and 41 or 35) or 5) + (feftyCustomText.Visible and 25 or 0) - 23)
+				feftyCustomText.Position = UDim2.fromOffset(0, feftyLogo.Visible and 35 or 0)
+				feftyCustomText.TextXAlignment = Enum.TextXAlignment.Left
+                feftyBackgroundList.HorizontalAlignment = Enum.HorizontalAlignment.Left
+                feftyBackground.Position = feftyText.Position + UDim2.fromOffset(-1, 2 + 23)
             end
         end
         
@@ -919,28 +919,28 @@ local function TextGUIUpdate()
 			for i,v in pairs(backgroundList) do 
 				local textdraw = Drawing.new("Text")
 				textdraw.Text = v
-				textdraw.Size = 23 * VapeScale.Scale
+				textdraw.Size = 23 * feftyScale.Scale
 				textdraw.ZIndex = 2
-				textdraw.Position = VapeText.AbsolutePosition + Vector2.new(VapeText.TextXAlignment == Enum.TextXAlignment.Right and (VapeText.AbsoluteSize.X - textdraw.TextBounds.X), ((textdraw.Size - 3) * i) + 6)
+				textdraw.Position = feftyText.AbsolutePosition + Vector2.new(feftyText.TextXAlignment == Enum.TextXAlignment.Right and (feftyText.AbsoluteSize.X - textdraw.TextBounds.X), ((textdraw.Size - 3) * i) + 6)
 				textdraw.Visible = true
 				local textdraw2 = Drawing.new("Text")
 				textdraw2.Text = textdraw.Text
-				textdraw2.Size = 23 * VapeScale.Scale
+				textdraw2.Size = 23 * feftyScale.Scale
 				textdraw2.Position = textdraw.Position + Vector2.new(1, 1)
 				textdraw2.Color = Color3.new()
 				textdraw2.Transparency = 0.5
-				textdraw2.Visible = VapeTextExtra.Visible
+				textdraw2.Visible = feftyTextExtra.Visible
 				table.insert(TextGUIObjects.Labels, textdraw)
 				table.insert(TextGUIObjects.ShadowLabels, textdraw2)
 			end
 		end
 
-        for i,v in pairs(VapeBackground:GetChildren()) do
-			table.clear(VapeBackgroundTable)
+        for i,v in pairs(feftyBackground:GetChildren()) do
+			table.clear(feftyBackgroundTable)
             if v:IsA("Frame") then v:Destroy() end
         end
         for i,v in pairs(backgroundList) do
-            local textsize = textService:GetTextSize(v, VapeText.TextSize, VapeText.Font, Vector2.new(1000000, 1000000))
+            local textsize = textService:GetTextSize(v, feftyText.TextSize, feftyText.Font, Vector2.new(1000000, 1000000))
             local backgroundFrame = Instance.new("Frame")
             backgroundFrame.BorderSizePixel = 0
             backgroundFrame.BackgroundTransparency = 0.62
@@ -949,10 +949,10 @@ local function TextGUIUpdate()
             backgroundFrame.ZIndex = 0
             backgroundFrame.LayoutOrder = i
             backgroundFrame.Size = UDim2.fromOffset(textsize.X + 8, textsize.Y)
-            backgroundFrame.Parent = VapeBackground
+            backgroundFrame.Parent = feftyBackground
             local backgroundLineFrame = Instance.new("Frame")
             backgroundLineFrame.Size = UDim2.new(0, 2, 1, 0)
-            backgroundLineFrame.Position = (VapeBackgroundList.HorizontalAlignment == Enum.HorizontalAlignment.Left and UDim2.new() or UDim2.new(1, -2, 0, 0))
+            backgroundLineFrame.Position = (feftyBackgroundList.HorizontalAlignment == Enum.HorizontalAlignment.Left and UDim2.new() or UDim2.new(1, -2, 0, 0))
             backgroundLineFrame.BorderSizePixel = 0
             backgroundLineFrame.Name = "ColorFrame"
             backgroundLineFrame.Parent = backgroundFrame
@@ -964,7 +964,7 @@ local function TextGUIUpdate()
             backgroundLineExtra.Size = UDim2.new(1, 0, 0, 2)
             backgroundLineExtra.Position = UDim2.new(0, 0, 1, -1)
             backgroundLineExtra.Parent = backgroundFrame
-			table.insert(VapeBackgroundTable, backgroundFrame)
+			table.insert(feftyBackgroundTable, backgroundFrame)
         end
 		
 		GuiLibrary.UpdateUI(GUIColorSlider.Hue, GUIColorSlider.Sat, GUIColorSlider.Value)
@@ -973,17 +973,17 @@ end
 
 TextGUI.GetCustomChildren().Parent:GetPropertyChangedSignal("Position"):Connect(TextGUIUpdate)
 GuiLibrary.UpdateHudEvent.Event:Connect(TextGUIUpdate)
-VapeScale:GetPropertyChangedSignal("Scale"):Connect(function()
+feftyScale:GetPropertyChangedSignal("Scale"):Connect(function()
 	local childrenobj = TextGUI.GetCustomChildren()
 	local check = (childrenobj.Parent.Position.X.Offset + childrenobj.Parent.Size.X.Offset / 2) >= (gameCamera.ViewportSize.X / 2)
-	childrenobj.Position = UDim2.new((check and -(VapeScale.Scale - 1) or 0), (check and 0 or -6 * (VapeScale.Scale - 1)), 1, -6 * (VapeScale.Scale - 1))
+	childrenobj.Position = UDim2.new((check and -(feftyScale.Scale - 1) or 0), (check and 0 or -6 * (feftyScale.Scale - 1)), 1, -6 * (feftyScale.Scale - 1))
 	TextGUIUpdate()
 end)
 TextGUIMode = TextGUI.CreateDropdown({
 	Name = "Mode",
 	List = {"Normal", "Drawing"},
 	Function = function(val)
-		VapeLogoFrame.Visible = val == "Normal"
+		feftyLogoFrame.Visible = val == "Normal"
 		for i,v in pairs(TextGUIConnections) do 
 			v:Disconnect()
 		end
@@ -995,117 +995,117 @@ TextGUIMode = TextGUI.CreateDropdown({
 			end
 		end
 		if val == "Drawing" then
-			local VapeLogoDrawing = Drawing.new("Image")
-			VapeLogoDrawing.Data = readfile("vape/assets/VapeLogo3.png")
-			VapeLogoDrawing.Size = VapeLogo.AbsoluteSize
-			VapeLogoDrawing.Position = VapeLogo.AbsolutePosition + Vector2.new(0, 36)
-			VapeLogoDrawing.ZIndex = 2
-			VapeLogoDrawing.Visible = VapeLogo.Visible
-			local VapeLogoV4Drawing = Drawing.new("Image")
-			VapeLogoV4Drawing.Data = readfile("vape/assets/VapeLogo4.png")
-			VapeLogoV4Drawing.Size = VapeLogoV4.AbsoluteSize
-			VapeLogoV4Drawing.Position = VapeLogoV4.AbsolutePosition + Vector2.new(0, 36)
-			VapeLogoV4Drawing.ZIndex = 2
-			VapeLogoV4Drawing.Visible = VapeLogo.Visible
-			local VapeLogoShadowDrawing = Drawing.new("Image")
-			VapeLogoShadowDrawing.Data = readfile("vape/assets/VapeLogo3.png")
-			VapeLogoShadowDrawing.Size = VapeLogo.AbsoluteSize
-			VapeLogoShadowDrawing.Position = VapeLogo.AbsolutePosition + Vector2.new(1, 37)
-			VapeLogoShadowDrawing.Transparency = 0.5
-			VapeLogoShadowDrawing.Visible = VapeLogo.Visible and VapeLogoShadow.Visible
-			local VapeLogo4Drawing = Drawing.new("Image")
-			VapeLogo4Drawing.Data = readfile("vape/assets/VapeLogo4.png")
-			VapeLogo4Drawing.Size = VapeLogoV4.AbsoluteSize
-			VapeLogo4Drawing.Position = VapeLogoV4.AbsolutePosition + Vector2.new(1, 37)
-			VapeLogo4Drawing.Transparency = 0.5
-			VapeLogo4Drawing.Visible = VapeLogo.Visible and VapeLogoShadow.Visible
-			local VapeCustomDrawingText = Drawing.new("Text")
-			VapeCustomDrawingText.Size = 30
-			VapeCustomDrawingText.Text = VapeCustomText.Text
-			VapeCustomDrawingText.Color = VapeCustomText.TextColor3
-			VapeCustomDrawingText.ZIndex = 2
-			VapeCustomDrawingText.Position = VapeCustomText.AbsolutePosition + Vector2.new(VapeText.TextXAlignment == Enum.TextXAlignment.Right and (VapeCustomText.AbsoluteSize.X - VapeCustomDrawingText.TextBounds.X), 32)
-			VapeCustomDrawingText.Visible = VapeCustomText.Visible
-			local VapeCustomDrawingShadow = Drawing.new("Text")
-			VapeCustomDrawingShadow.Size = 30
-			VapeCustomDrawingShadow.Text = VapeCustomText.Text
-			VapeCustomDrawingShadow.Transparency = 0.5
-			VapeCustomDrawingShadow.Color = Color3.new()
-			VapeCustomDrawingShadow.Position = VapeCustomDrawingText.Position + Vector2.new(1, 1)
-			VapeCustomDrawingShadow.Visible = VapeCustomText.Visible and VapeTextExtra.Visible
+			local feftyLogoDrawing = Drawing.new("Image")
+			feftyLogoDrawing.Data = readfile("fefty/assets/feftyLogo3.png")
+			feftyLogoDrawing.Size = feftyLogo.AbsoluteSize
+			feftyLogoDrawing.Position = feftyLogo.AbsolutePosition + Vector2.new(0, 36)
+			feftyLogoDrawing.ZIndex = 2
+			feftyLogoDrawing.Visible = feftyLogo.Visible
+			local feftyLogoV4Drawing = Drawing.new("Image")
+			feftyLogoV4Drawing.Data = readfile("fefty/assets/feftyLogo4.png")
+			feftyLogoV4Drawing.Size = feftyLogoV4.AbsoluteSize
+			feftyLogoV4Drawing.Position = feftyLogoV4.AbsolutePosition + Vector2.new(0, 36)
+			feftyLogoV4Drawing.ZIndex = 2
+			feftyLogoV4Drawing.Visible = feftyLogo.Visible
+			local feftyLogoShadowDrawing = Drawing.new("Image")
+			feftyLogoShadowDrawing.Data = readfile("fefty/assets/feftyLogo3.png")
+			feftyLogoShadowDrawing.Size = feftyLogo.AbsoluteSize
+			feftyLogoShadowDrawing.Position = feftyLogo.AbsolutePosition + Vector2.new(1, 37)
+			feftyLogoShadowDrawing.Transparency = 0.5
+			feftyLogoShadowDrawing.Visible = feftyLogo.Visible and feftyLogoShadow.Visible
+			local feftyLogo4Drawing = Drawing.new("Image")
+			feftyLogo4Drawing.Data = readfile("fefty/assets/feftyLogo4.png")
+			feftyLogo4Drawing.Size = feftyLogoV4.AbsoluteSize
+			feftyLogo4Drawing.Position = feftyLogoV4.AbsolutePosition + Vector2.new(1, 37)
+			feftyLogo4Drawing.Transparency = 0.5
+			feftyLogo4Drawing.Visible = feftyLogo.Visible and feftyLogoShadow.Visible
+			local feftyCustomDrawingText = Drawing.new("Text")
+			feftyCustomDrawingText.Size = 30
+			feftyCustomDrawingText.Text = feftyCustomText.Text
+			feftyCustomDrawingText.Color = feftyCustomText.TextColor3
+			feftyCustomDrawingText.ZIndex = 2
+			feftyCustomDrawingText.Position = feftyCustomText.AbsolutePosition + Vector2.new(feftyText.TextXAlignment == Enum.TextXAlignment.Right and (feftyCustomText.AbsoluteSize.X - feftyCustomDrawingText.TextBounds.X), 32)
+			feftyCustomDrawingText.Visible = feftyCustomText.Visible
+			local feftyCustomDrawingShadow = Drawing.new("Text")
+			feftyCustomDrawingShadow.Size = 30
+			feftyCustomDrawingShadow.Text = feftyCustomText.Text
+			feftyCustomDrawingShadow.Transparency = 0.5
+			feftyCustomDrawingShadow.Color = Color3.new()
+			feftyCustomDrawingShadow.Position = feftyCustomDrawingText.Position + Vector2.new(1, 1)
+			feftyCustomDrawingShadow.Visible = feftyCustomText.Visible and feftyTextExtra.Visible
 			pcall(function()
-				VapeLogoShadowDrawing.Color = Color3.new()
-				VapeLogo4Drawing.Color = Color3.new()
-				VapeLogoDrawing.Color = VapeLogoGradient.Color.Keypoints[1].Value
+				feftyLogoShadowDrawing.Color = Color3.new()
+				feftyLogo4Drawing.Color = Color3.new()
+				feftyLogoDrawing.Color = feftyLogoGradient.Color.Keypoints[1].Value
 			end)
-			table.insert(TextGUIObjects.Logo, VapeLogoDrawing)
-			table.insert(TextGUIObjects.Logo, VapeLogoV4Drawing)
-			table.insert(TextGUIObjects.Logo, VapeLogoShadowDrawing)
-			table.insert(TextGUIObjects.Logo, VapeLogo4Drawing)
-			table.insert(TextGUIObjects.Logo, VapeCustomDrawingText)
-			table.insert(TextGUIObjects.Logo, VapeCustomDrawingShadow)
-			table.insert(TextGUIConnections, VapeLogo:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
-				VapeLogoDrawing.Position = VapeLogo.AbsolutePosition + Vector2.new(0, 36)
-				VapeLogoShadowDrawing.Position = VapeLogo.AbsolutePosition + Vector2.new(1, 37)
+			table.insert(TextGUIObjects.Logo, feftyLogoDrawing)
+			table.insert(TextGUIObjects.Logo, feftyLogoV4Drawing)
+			table.insert(TextGUIObjects.Logo, feftyLogoShadowDrawing)
+			table.insert(TextGUIObjects.Logo, feftyLogo4Drawing)
+			table.insert(TextGUIObjects.Logo, feftyCustomDrawingText)
+			table.insert(TextGUIObjects.Logo, feftyCustomDrawingShadow)
+			table.insert(TextGUIConnections, feftyLogo:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+				feftyLogoDrawing.Position = feftyLogo.AbsolutePosition + Vector2.new(0, 36)
+				feftyLogoShadowDrawing.Position = feftyLogo.AbsolutePosition + Vector2.new(1, 37)
 			end))
-			table.insert(TextGUIConnections, VapeLogo:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-				VapeLogoDrawing.Size = VapeLogo.AbsoluteSize
-				VapeLogoShadowDrawing.Size = VapeLogo.AbsoluteSize
-				VapeCustomDrawingText.Size = 30 * VapeScale.Scale
-				VapeCustomDrawingShadow.Size = 30 * VapeScale.Scale
+			table.insert(TextGUIConnections, feftyLogo:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+				feftyLogoDrawing.Size = feftyLogo.AbsoluteSize
+				feftyLogoShadowDrawing.Size = feftyLogo.AbsoluteSize
+				feftyCustomDrawingText.Size = 30 * feftyScale.Scale
+				feftyCustomDrawingShadow.Size = 30 * feftyScale.Scale
 			end))
-			table.insert(TextGUIConnections, VapeLogoV4:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
-				VapeLogoV4Drawing.Position = VapeLogoV4.AbsolutePosition + Vector2.new(0, 36)
-				VapeLogo4Drawing.Position = VapeLogoV4.AbsolutePosition + Vector2.new(1, 37)
+			table.insert(TextGUIConnections, feftyLogoV4:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+				feftyLogoV4Drawing.Position = feftyLogoV4.AbsolutePosition + Vector2.new(0, 36)
+				feftyLogo4Drawing.Position = feftyLogoV4.AbsolutePosition + Vector2.new(1, 37)
 			end))
-			table.insert(TextGUIConnections, VapeLogoV4:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-				VapeLogoV4Drawing.Size = VapeLogoV4.AbsoluteSize
-				VapeLogo4Drawing.Size = VapeLogoV4.AbsoluteSize
+			table.insert(TextGUIConnections, feftyLogoV4:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+				feftyLogoV4Drawing.Size = feftyLogoV4.AbsoluteSize
+				feftyLogo4Drawing.Size = feftyLogoV4.AbsoluteSize
 			end))
-			table.insert(TextGUIConnections, VapeCustomText:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
-				VapeCustomDrawingText.Position = VapeCustomText.AbsolutePosition + Vector2.new(VapeText.TextXAlignment == Enum.TextXAlignment.Right and (VapeCustomText.AbsoluteSize.X - VapeCustomDrawingText.TextBounds.X), 32)
-				VapeCustomDrawingShadow.Position = VapeCustomDrawingText.Position + Vector2.new(1, 1)
+			table.insert(TextGUIConnections, feftyCustomText:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+				feftyCustomDrawingText.Position = feftyCustomText.AbsolutePosition + Vector2.new(feftyText.TextXAlignment == Enum.TextXAlignment.Right and (feftyCustomText.AbsoluteSize.X - feftyCustomDrawingText.TextBounds.X), 32)
+				feftyCustomDrawingShadow.Position = feftyCustomDrawingText.Position + Vector2.new(1, 1)
 			end))
-			table.insert(TextGUIConnections, VapeLogoShadow:GetPropertyChangedSignal("Visible"):Connect(function()
-				VapeLogoShadowDrawing.Visible = VapeLogoShadow.Visible
-				VapeLogo4Drawing.Visible = VapeLogoShadow.Visible
+			table.insert(TextGUIConnections, feftyLogoShadow:GetPropertyChangedSignal("Visible"):Connect(function()
+				feftyLogoShadowDrawing.Visible = feftyLogoShadow.Visible
+				feftyLogo4Drawing.Visible = feftyLogoShadow.Visible
 			end))
-			table.insert(TextGUIConnections, VapeTextExtra:GetPropertyChangedSignal("Visible"):Connect(function()
+			table.insert(TextGUIConnections, feftyTextExtra:GetPropertyChangedSignal("Visible"):Connect(function()
 				for i,textdraw in pairs(TextGUIObjects.ShadowLabels) do 
-					textdraw.Visible = VapeTextExtra.Visible
+					textdraw.Visible = feftyTextExtra.Visible
 				end
-				VapeCustomDrawingShadow.Visible = VapeCustomText.Visible and VapeTextExtra.Visible
+				feftyCustomDrawingShadow.Visible = feftyCustomText.Visible and feftyTextExtra.Visible
 			end))
-			table.insert(TextGUIConnections, VapeLogo:GetPropertyChangedSignal("Visible"):Connect(function()
-				VapeLogoDrawing.Visible = VapeLogo.Visible
-				VapeLogoV4Drawing.Visible = VapeLogo.Visible
-				VapeLogoShadowDrawing.Visible = VapeLogo.Visible and VapeTextExtra.Visible
-				VapeLogo4Drawing.Visible = VapeLogo.Visible and VapeTextExtra.Visible
+			table.insert(TextGUIConnections, feftyLogo:GetPropertyChangedSignal("Visible"):Connect(function()
+				feftyLogoDrawing.Visible = feftyLogo.Visible
+				feftyLogoV4Drawing.Visible = feftyLogo.Visible
+				feftyLogoShadowDrawing.Visible = feftyLogo.Visible and feftyTextExtra.Visible
+				feftyLogo4Drawing.Visible = feftyLogo.Visible and feftyTextExtra.Visible
 			end))
-			table.insert(TextGUIConnections, VapeCustomText:GetPropertyChangedSignal("Visible"):Connect(function()
-				VapeCustomDrawingText.Visible = VapeCustomText.Visible
-				VapeCustomDrawingShadow.Visible = VapeCustomText.Visible and VapeTextExtra.Visible
+			table.insert(TextGUIConnections, feftyCustomText:GetPropertyChangedSignal("Visible"):Connect(function()
+				feftyCustomDrawingText.Visible = feftyCustomText.Visible
+				feftyCustomDrawingShadow.Visible = feftyCustomText.Visible and feftyTextExtra.Visible
 			end))
-			table.insert(TextGUIConnections, VapeCustomText:GetPropertyChangedSignal("Text"):Connect(function()
-				VapeCustomDrawingText.Text = VapeCustomText.Text
-				VapeCustomDrawingShadow.Text = VapeCustomText.Text
-				VapeCustomDrawingText.Position = VapeCustomText.AbsolutePosition + Vector2.new(VapeText.TextXAlignment == Enum.TextXAlignment.Right and (VapeCustomText.AbsoluteSize.X - VapeCustomDrawingText.TextBounds.X), 32)
-				VapeCustomDrawingShadow.Position = VapeCustomDrawingText.Position + Vector2.new(1, 1)
+			table.insert(TextGUIConnections, feftyCustomText:GetPropertyChangedSignal("Text"):Connect(function()
+				feftyCustomDrawingText.Text = feftyCustomText.Text
+				feftyCustomDrawingShadow.Text = feftyCustomText.Text
+				feftyCustomDrawingText.Position = feftyCustomText.AbsolutePosition + Vector2.new(feftyText.TextXAlignment == Enum.TextXAlignment.Right and (feftyCustomText.AbsoluteSize.X - feftyCustomDrawingText.TextBounds.X), 32)
+				feftyCustomDrawingShadow.Position = feftyCustomDrawingText.Position + Vector2.new(1, 1)
 			end))
-			table.insert(TextGUIConnections, VapeCustomText:GetPropertyChangedSignal("TextColor3"):Connect(function()
-				VapeCustomDrawingText.Color = VapeCustomText.TextColor3
+			table.insert(TextGUIConnections, feftyCustomText:GetPropertyChangedSignal("TextColor3"):Connect(function()
+				feftyCustomDrawingText.Color = feftyCustomText.TextColor3
 			end))
-			table.insert(TextGUIConnections, VapeText:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+			table.insert(TextGUIConnections, feftyText:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
 				for i,textdraw in pairs(TextGUIObjects.Labels) do 
-					textdraw.Position = VapeText.AbsolutePosition + Vector2.new(VapeText.TextXAlignment == Enum.TextXAlignment.Right and (VapeText.AbsoluteSize.X - textdraw.TextBounds.X), ((textdraw.Size - 3) * i) + 6)
+					textdraw.Position = feftyText.AbsolutePosition + Vector2.new(feftyText.TextXAlignment == Enum.TextXAlignment.Right and (feftyText.AbsoluteSize.X - textdraw.TextBounds.X), ((textdraw.Size - 3) * i) + 6)
 				end
 				for i,textdraw in pairs(TextGUIObjects.ShadowLabels) do 
-					textdraw.Position = Vector2.new(1, 1) + (VapeText.AbsolutePosition + Vector2.new(VapeText.TextXAlignment == Enum.TextXAlignment.Right and (VapeText.AbsoluteSize.X - textdraw.TextBounds.X), ((textdraw.Size - 3) * i) + 6))
+					textdraw.Position = Vector2.new(1, 1) + (feftyText.AbsolutePosition + Vector2.new(feftyText.TextXAlignment == Enum.TextXAlignment.Right and (feftyText.AbsoluteSize.X - textdraw.TextBounds.X), ((textdraw.Size - 3) * i) + 6))
 				end
 			end))
-			table.insert(TextGUIConnections, VapeLogoGradient:GetPropertyChangedSignal("Color"):Connect(function()
+			table.insert(TextGUIConnections, feftyLogoGradient:GetPropertyChangedSignal("Color"):Connect(function()
 				pcall(function()
-					VapeLogoDrawing.Color = VapeLogoGradient.Color.Keypoints[1].Value
+					feftyLogoDrawing.Color = feftyLogoGradient.Color.Keypoints[1].Value
 				end)
 			end))
 		end
@@ -1132,8 +1132,8 @@ TextGUI.CreateDropdown({
 	Name = "Font",
 	List = TextGUIFonts,
 	Function = function(val)
-		VapeText.Font = Enum.Font[val]
-		VapeTextExtra.Font = Enum.Font[val]
+		feftyText.Font = Enum.Font[val]
+		feftyTextExtra.Font = Enum.Font[val]
 		GuiLibrary.UpdateHudEvent:Fire()
 	end
 })
@@ -1141,8 +1141,8 @@ TextGUI.CreateDropdown({
 	Name = "CustomTextFont",
 	List = TextGUIFonts2,
 	Function = function(val)
-		VapeText.Font = Enum.Font[val]
-		VapeTextExtra.Font = Enum.Font[val]
+		feftyText.Font = Enum.Font[val]
+		feftyTextExtra.Font = Enum.Font[val]
 		GuiLibrary.UpdateHudEvent:Fire()
 	end
 })
@@ -1152,29 +1152,29 @@ TextGUI.CreateSlider({
 	Max = 50,
 	Default = 10,
 	Function = function(val)
-		VapeScale.Scale = val / 10
+		feftyScale.Scale = val / 10
 	end
 })
 TextGUI.CreateToggle({
 	Name = "Shadow", 
 	Function = function(callback) 
-        VapeTextExtra.Visible = callback 
-        VapeLogoShadow.Visible = callback 
+        feftyTextExtra.Visible = callback 
+        feftyLogoShadow.Visible = callback 
     end,
 	HoverText = "Renders shadowed text."
 })
 TextGUI.CreateToggle({
 	Name = "Watermark", 
 	Function = function(callback) 
-		VapeLogo.Visible = callback
+		feftyLogo.Visible = callback
 		GuiLibrary.UpdateHudEvent:Fire()
 	end,
-	HoverText = "Renders a vape watermark"
+	HoverText = "Renders a fefty watermark"
 })
 TextGUIBackgroundToggle = TextGUI.CreateToggle({
 	Name = "Render background", 
 	Function = function(callback)
-		VapeBackground.Visible = callback
+		feftyBackground.Visible = callback
 		GuiLibrary.UpdateHudEvent:Fire()
 	end
 })
@@ -1210,7 +1210,7 @@ local CustomText = {Value = "", Object = nil}
 TextGUI.CreateToggle({
 	Name = "Add custom text", 
 	Function = function(callback) 
-		VapeCustomText.Visible = callback
+		feftyCustomText.Visible = callback
 		CustomText.Object.Visible = callback
 		GuiLibrary.UpdateHudEvent:Fire()
 	end,
@@ -1219,14 +1219,14 @@ TextGUI.CreateToggle({
 CustomText = TextGUI.CreateTextBox({
 	Name = "Custom text",
 	FocusLost = function(enter)
-		VapeCustomText.Text = CustomText.Value
-		VapeCustomTextShadow.Text = CustomText.Value
+		feftyCustomText.Text = CustomText.Value
+		feftyCustomTextShadow.Text = CustomText.Value
 	end
 })
 CustomText.Object.Visible = false
 local TargetInfo = GuiLibrary.CreateCustomWindow({
 	Name = "Target Info",
-	Icon = "vape/assets/TargetInfoIcon1.png",
+	Icon = "fefty/assets/TargetInfoIcon1.png",
 	IconSize = 16
 })
 local TargetInfoDisplayNames = TargetInfo.CreateToggle({
@@ -1281,7 +1281,7 @@ TargetInfoHealthBackground.Parent = TargetInfoMainInfo
 local TargetInfoHealthBackgroundShadow = Instance.new("ImageLabel")
 TargetInfoHealthBackgroundShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 TargetInfoHealthBackgroundShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-TargetInfoHealthBackgroundShadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
+TargetInfoHealthBackgroundShadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
 TargetInfoHealthBackgroundShadow.BackgroundTransparency = 1
 TargetInfoHealthBackgroundShadow.ImageTransparency = 0.6
 TargetInfoHealthBackgroundShadow.ZIndex = -1
@@ -1339,11 +1339,11 @@ local TargetInfoHealthTween
 TargetInfo.GetCustomChildren().Parent:GetPropertyChangedSignal("Size"):Connect(function()
 	TargetInfoMainInfo.Position = UDim2.fromOffset(0, TargetInfo.GetCustomChildren().Parent.Size ~= UDim2.fromOffset(220, 0) and -5 or 40)
 end)
-shared.VapeTargetInfo = {
+shared.feftyTargetInfo = {
 	UpdateInfo = function(tab, targetsize) 
 		if TargetInfo.GetCustomChildren().Parent then
 			local hasTarget = false
-			for _, v in pairs(shared.VapeTargetInfo.Targets) do
+			for _, v in pairs(shared.feftyTargetInfo.Targets) do
 				hasTarget = true
 				TargetInfoImage.Image = 'rbxthumb://type=AvatarHeadShot&id='..v.Player.UserId..'&w=420&h=420'
 				TargetInfoHealth:TweenSize(UDim2.new(math.clamp(v.Humanoid.Health / v.Humanoid.MaxHealth, 0, 1), 0, 1, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quart, 0.25, true)
@@ -1362,13 +1362,13 @@ shared.VapeTargetInfo = {
 }
 task.spawn(function()
 	repeat
-		shared.VapeTargetInfo.UpdateInfo()
+		shared.feftyTargetInfo.UpdateInfo()
 		task.wait()
-	until not vapeInjected
+	until not feftyInjected
 end)
 GUI.CreateCustomToggle({
 	Name = "Target Info", 
-	Icon = "vape/assets/TargetInfoIcon2.png", 
+	Icon = "fefty/assets/TargetInfoIcon2.png", 
 	Function = function(callback) TargetInfo.SetVisible(callback) end,
 	Priority = 1
 })
@@ -1390,7 +1390,7 @@ ModuleSettings.CreateToggle({
 		if callback then
 			MiddleClickInput = game:GetService("UserInputService").InputBegan:Connect(function(input1)
 				if input1.UserInputType == Enum.UserInputType.MouseButton3 then
-					local entityLibrary = shared.vapeentity
+					local entityLibrary = shared.feftyentity
 					if entityLibrary then 
 						local rayparams = RaycastParams.new()
 						rayparams.FilterType = Enum.RaycastFilterType.Whitelist
@@ -1453,7 +1453,7 @@ local windowSortOrder = {
 }
 local windowSortOrder2 = {"Combat", "Blatant", "Render", "Utility", "World"}
 
-local function getVapeSaturation(val)
+local function getfeftySaturation(val)
 	local sat = 0.9
 	if val < 0.03 then 
 		sat = 0.75 + (0.15 * math.clamp(val / 0.03, 0, 1))
@@ -1473,19 +1473,19 @@ end
 GuiLibrary.UpdateUI = function(h, s, val, bypass)
 	pcall(function()
 		local rainbowGUICheck = GUIColorSlider.RainbowValue
-		local mainRainbowSaturation = rainbowGUICheck and getVapeSaturation(h) or s
+		local mainRainbowSaturation = rainbowGUICheck and getfeftySaturation(h) or s
 		local mainRainbowGradient = h + (rainbowGUICheck and (-0.05) or 0)
 		mainRainbowGradient = mainRainbowGradient % 1
-        local mainRainbowGradientSaturation = TextGUIGradient.Enabled and getVapeSaturation(mainRainbowGradient) or mainRainbowSaturation
+        local mainRainbowGradientSaturation = TextGUIGradient.Enabled and getfeftySaturation(mainRainbowGradient) or mainRainbowSaturation
 
 		GuiLibrary.ObjectsThatCanBeSaved.GUIWindow.Object.Logo1.Logo2.ImageColor3 = Color3.fromHSV(h, mainRainbowSaturation, rainbowGUICheck and 1 or val)
-		VapeText.TextColor3 = Color3.fromHSV(TextGUIGradient.Enabled and mainRainbowGradient or h, mainRainbowSaturation, rainbowGUICheck and 1 or val)
-		VapeCustomText.TextColor3 = VapeText.TextColor3
-		VapeLogoGradient.Color = ColorSequence.new({
+		feftyText.TextColor3 = Color3.fromHSV(TextGUIGradient.Enabled and mainRainbowGradient or h, mainRainbowSaturation, rainbowGUICheck and 1 or val)
+		feftyCustomText.TextColor3 = feftyText.TextColor3
+		feftyLogoGradient.Color = ColorSequence.new({
 			ColorSequenceKeypoint.new(0, Color3.fromHSV(h, mainRainbowSaturation, rainbowGUICheck and 1 or val)),
-			ColorSequenceKeypoint.new(1, VapeText.TextColor3)
+			ColorSequenceKeypoint.new(1, feftyText.TextColor3)
 		})
-		VapeLogoGradient2.Color = ColorSequence.new({
+		feftyLogoGradient2.Color = ColorSequence.new({
 			ColorSequenceKeypoint.new(0, Color3.fromHSV(h, TextGUIGradient.Enabled and rainbowGUICheck and mainRainbowSaturation or 0, 1)),
 			ColorSequenceKeypoint.new(1, Color3.fromHSV(TextGUIGradient.Enabled and mainRainbowGradient or h, TextGUIGradient.Enabled and rainbowGUICheck and mainRainbowSaturation or 0, 1))
 		})
@@ -1495,7 +1495,7 @@ GuiLibrary.UpdateUI = function(h, s, val, bypass)
 		for i, v in pairs(TextGUIFormatted) do
 			local rainbowcolor = h + (rainbowGUICheck and (-0.025 * (i + (TextGUIGradient.Enabled and 2 or 0))) or 0)
 			rainbowcolor = rainbowcolor % 1
-			local newcolor = Color3.fromHSV(rainbowcolor, rainbowGUICheck and getVapeSaturation(rainbowcolor) or mainRainbowSaturation, rainbowGUICheck and 1 or val)
+			local newcolor = Color3.fromHSV(rainbowcolor, rainbowGUICheck and getfeftySaturation(rainbowcolor) or mainRainbowSaturation, rainbowGUICheck and 1 or val)
 			newTextGUIText = newTextGUIText..'<font color="rgb('..math.floor(newcolor.R * 255)..","..math.floor(newcolor.G * 255)..","..math.floor(newcolor.B * 255)..')">'..v.Text..'</font><font color="rgb(170, 170, 170)">'..v.ExtraText..'</font>\n'
 			backgroundTable[i] = newcolor
 		end
@@ -1509,11 +1509,11 @@ GuiLibrary.UpdateUI = function(h, s, val, bypass)
 		end
 
 		if TextGUIBackgroundToggle.Enabled then
-			for i, v in pairs(VapeBackgroundTable) do
+			for i, v in pairs(feftyBackgroundTable) do
 				v.ColorFrame.BackgroundColor3 = backgroundTable[v.LayoutOrder] or Color3.new()
 			end
 		end
-		VapeText.Text = newTextGUIText
+		feftyText.Text = newTextGUIText
 
 		if (not GuiLibrary.MainGui.ScaledGui.ClickGui.Visible) and (not bypass) then return end
 		local buttonColorIndex = 0
@@ -1534,7 +1534,7 @@ GuiLibrary.UpdateUI = function(h, s, val, bypass)
 				buttonColorIndex = buttonColorIndex + 1
 				local rainbowcolor = h + (rainbowGUICheck and (-0.025 * windowSortOrder[i]) or 0)
 				rainbowcolor = rainbowcolor % 1
-				local newcolor = Color3.fromHSV(rainbowcolor, rainbowGUICheck and getVapeSaturation(rainbowcolor) or mainRainbowSaturation, rainbowGUICheck and 1 or val)
+				local newcolor = Color3.fromHSV(rainbowcolor, rainbowGUICheck and getfeftySaturation(rainbowcolor) or mainRainbowSaturation, rainbowGUICheck and 1 or val)
 				v.Object.ButtonText.TextColor3 = newcolor
 				if v.Object:FindFirstChild("ButtonIcon") then
 					v.Object.ButtonIcon.ImageColor3 = newcolor
@@ -1547,7 +1547,7 @@ GuiLibrary.UpdateUI = function(h, s, val, bypass)
 						mainRainbowGradient = mainRainbowGradient and (mainRainbowGradient - 1) > 0 and GuiLibrary.ObjectsThatCanBeSaved[windowSortOrder2[mainRainbowGradient - 1].."Window"].SortOrder or 0
 						local rainbowcolor = h + (rainbowGUICheck and (-0.025 * (mainRainbowGradient + v.SortOrder)) or 0)
 						rainbowcolor = rainbowcolor % 1
-						newcolor = Color3.fromHSV(rainbowcolor, rainbowGUICheck and getVapeSaturation(rainbowcolor) or mainRainbowSaturation, rainbowGUICheck and 1 or val)
+						newcolor = Color3.fromHSV(rainbowcolor, rainbowGUICheck and getfeftySaturation(rainbowcolor) or mainRainbowSaturation, rainbowGUICheck and 1 or val)
 					end
 					v.Object.BackgroundColor3 = newcolor
 				end
@@ -1555,7 +1555,7 @@ GuiLibrary.UpdateUI = function(h, s, val, bypass)
 				if v.Api.Enabled then
 					local rainbowcolor = h + (rainbowGUICheck and (-0.025 * buttonColorIndex) or 0)
 					rainbowcolor = rainbowcolor % 1
-					local newcolor = Color3.fromHSV(rainbowcolor, rainbowGUICheck and getVapeSaturation(rainbowcolor) or mainRainbowSaturation, rainbowGUICheck and 1 or val)
+					local newcolor = Color3.fromHSV(rainbowcolor, rainbowGUICheck and getfeftySaturation(rainbowcolor) or mainRainbowSaturation, rainbowGUICheck and 1 or val)
 					v.Object.ImageColor3 = newcolor
 				end
 			elseif (v.Type == "Toggle" or v.Type == "ToggleMain") and v.Api.Enabled then
@@ -1572,7 +1572,7 @@ GuiLibrary.UpdateUI = function(h, s, val, bypass)
 
 		local rainbowcolor = h + (rainbowGUICheck and (-0.025 * buttonColorIndex) or 0)
 		rainbowcolor = rainbowcolor % 1
-		GuiLibrary.ObjectsThatCanBeSaved.GUIWindow.Object.Children.Extras.MainButton.ImageColor3 = (GUI.GetVisibleIcons() > 0 and Color3.fromHSV(rainbowcolor, getVapeSaturation(rainbowcolor), 1) or Color3.fromRGB(199, 199, 199))
+		GuiLibrary.ObjectsThatCanBeSaved.GUIWindow.Object.Children.Extras.MainButton.ImageColor3 = (GUI.GetVisibleIcons() > 0 and Color3.fromHSV(rainbowcolor, getfeftySaturation(rainbowcolor), 1) or Color3.fromRGB(199, 199, 199))
 
 		for i, v in pairs(ProfilesTextList.ScrollingObject.ScrollingFrame:GetChildren()) do
 			if v:IsA("TextButton") and v.ItemText.Text == GuiLibrary.CurrentProfile then
@@ -1658,24 +1658,24 @@ GUISettings.CreateSlider({
 
 local GUIbind = GUI.CreateGUIBind()
 local teleportConnection = playersService.LocalPlayer.OnTeleport:Connect(function(State)
-    if (not teleportedServers) and (not shared.VapeIndependent) then
+    if (not teleportedServers) and (not shared.feftyIndependent) then
 		teleportedServers = true
 		local teleportScript = [[
-			shared.VapeSwitchServers = true 
-			if shared.VapeDeveloper then 
-				loadstring(readfile("vape/NewMainScript.lua"))() 
+			shared.feftySwitchServers = true 
+			if shared.feftyDeveloper then 
+				loadstring(readfile("fefty/NewMainScript.lua"))() 
 			else 
-				loadstring(game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("vape/commithash.txt").."/NewMainScript.lua", true))() 
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("fefty/commithash.txt").."/NewMainScript.lua", true))() 
 			end
 		]]
-		if shared.VapeDeveloper then
-			teleportScript = 'shared.VapeDeveloper = true\n'..teleportScript
+		if shared.feftyDeveloper then
+			teleportScript = 'shared.feftyDeveloper = true\n'..teleportScript
 		end
-		if shared.VapePrivate then
-			teleportScript = 'shared.VapePrivate = true\n'..teleportScript
+		if shared.feftyPrivate then
+			teleportScript = 'shared.feftyPrivate = true\n'..teleportScript
 		end
-		if shared.VapeCustomProfile then 
-			teleportScript = "shared.VapeCustomProfile = '"..shared.VapeCustomProfile.."'\n"..teleportScript
+		if shared.feftyCustomProfile then 
+			teleportScript = "shared.feftyCustomProfile = '"..shared.feftyCustomProfile.."'\n"..teleportScript
 		end
 		GuiLibrary.SaveSettings()
 		queueonteleport(teleportScript)
@@ -1687,10 +1687,10 @@ GuiLibrary.SelfDestruct = function()
 		coroutine.close(saveSettingsLoop)
 	end)
 
-	if vapeInjected then 
+	if feftyInjected then 
 		GuiLibrary.SaveSettings()
 	end
-	vapeInjected = false
+	feftyInjected = false
 	game:GetService("UserInputService").OverrideMouseIconBehavior = Enum.OverrideMouseIconBehavior.None
 
 	for i,v in pairs(GuiLibrary.ObjectsThatCanBeSaved) do
@@ -1711,14 +1711,14 @@ GuiLibrary.SelfDestruct = function()
 	end
 
 	GuiLibrary.SelfDestructEvent:Fire()
-	shared.VapeExecuted = nil
-	shared.VapePrivate = nil
-	shared.VapeFullyLoaded = nil
-	shared.VapeSwitchServers = nil
+	shared.feftyExecuted = nil
+	shared.feftyPrivate = nil
+	shared.feftyFullyLoaded = nil
+	shared.feftySwitchServers = nil
 	shared.GuiLibrary = nil
-	shared.VapeIndependent = nil
-	shared.VapeManualLoad = nil
-	shared.CustomSaveVape = nil
+	shared.feftyIndependent = nil
+	shared.feftyManualLoad = nil
+	shared.CustomSavefefty = nil
 	GuiLibrary.KeyInputHandler:Disconnect()
 	GuiLibrary.KeyInputHandler2:Disconnect()
 	if MiddleClickInput then
@@ -1732,17 +1732,17 @@ end
 GeneralSettings.CreateButton2({
 	Name = "RESET CURRENT PROFILE", 
 	Function = function()
-		local vapePrivateCheck = shared.VapePrivate
+		local feftyPrivateCheck = shared.feftyPrivate
 		GuiLibrary.SelfDestruct()
 		if delfile then
-			delfile(baseDirectory.."Profiles/"..(GuiLibrary.CurrentProfile ~= "default" and GuiLibrary.CurrentProfile or "")..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt")
+			delfile(baseDirectory.."Profiles/"..(GuiLibrary.CurrentProfile ~= "default" and GuiLibrary.CurrentProfile or "")..(shared.CustomSavefefty or game.PlaceId)..".feftyprofile.txt")
 		else
-			writefile(baseDirectory.."Profiles/"..(GuiLibrary.CurrentProfile ~= "default" and GuiLibrary.CurrentProfile or "")..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt", "")
+			writefile(baseDirectory.."Profiles/"..(GuiLibrary.CurrentProfile ~= "default" and GuiLibrary.CurrentProfile or "")..(shared.CustomSavefefty or game.PlaceId)..".feftyprofile.txt", "")
 		end
-		shared.VapeSwitchServers = true
-		shared.VapeOpenGui = true
-		shared.VapePrivate = vapePrivateCheck
-		loadstring(vapeGithubRequest("NewMainScript.lua"))()
+		shared.feftySwitchServers = true
+		shared.feftyOpenGui = true
+		shared.feftyPrivate = feftyPrivateCheck
+		loadstring(feftyGithubRequest("NewMainScript.lua"))()
 	end
 })
 GUISettings.CreateButton2({
@@ -1806,33 +1806,33 @@ GeneralSettings.CreateButton2({
 	Function = GuiLibrary.SelfDestruct
 })
 
-local function loadVape()
-	if not shared.VapeIndependent then
-		loadstring(vapeGithubRequest("Universal.lua"))()
-		if isfile("vape/CustomModules/"..game.PlaceId..".lua") then
-			loadstring(readfile("vape/CustomModules/"..game.PlaceId..".lua"))()
+local function loadfefty()
+	if not shared.feftyIndependent then
+		loadstring(feftyGithubRequest("Universal.lua"))()
+		if isfile("fefty/CustomModules/"..game.PlaceId..".lua") then
+			loadstring(readfile("fefty/CustomModules/"..game.PlaceId..".lua"))()
 		else
-			if not shared.VapeDeveloper then
-				local suc, publicrepo = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("vape/commithash.txt").."/CustomModules/"..game.PlaceId..".lua") end)
+			if not shared.feftyDeveloper then
+				local suc, publicrepo = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("fefty/commithash.txt").."/CustomModules/"..game.PlaceId..".lua") end)
 				if suc and publicrepo and publicrepo ~= "404: Not Found" then
-					writefile("vape/CustomModules/"..game.PlaceId..".lua", "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..publicrepo)
-					loadstring(readfile("vape/CustomModules/"..game.PlaceId..".lua"))()
+					writefile("fefty/CustomModules/"..game.PlaceId..".lua", "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..publicrepo)
+					loadstring(readfile("fefty/CustomModules/"..game.PlaceId..".lua"))()
 				end
 			end
 		end
-		if shared.VapePrivate then
-			if isfile("vapeprivate/CustomModules/"..game.PlaceId..".lua") then
-				loadstring(readfile("vapeprivate/CustomModules/"..game.PlaceId..".lua"))()
+		if shared.feftyPrivate then
+			if isfile("feftyprivate/CustomModules/"..game.PlaceId..".lua") then
+				loadstring(readfile("feftyprivate/CustomModules/"..game.PlaceId..".lua"))()
 			end	
 		end
 	else
-		repeat task.wait() until shared.VapeManualLoad
+		repeat task.wait() until shared.feftyManualLoad
 	end
 	if #ProfilesTextList.ObjectList == 0 then
 		table.insert(ProfilesTextList.ObjectList, "default")
 		ProfilesTextList.RefreshValues(ProfilesTextList.ObjectList)
 	end
-	GuiLibrary.LoadSettings(shared.VapeCustomProfile)
+	GuiLibrary.LoadSettings(shared.feftyCustomProfile)
 	local profiles = {}
 	for i,v in pairs(GuiLibrary.Profiles) do 
 		table.insert(profiles, i)
@@ -1842,31 +1842,31 @@ local function loadVape()
 	GUIbind.Reload()
 	TextGUIUpdate()
 	GuiLibrary.UpdateUI(GUIColorSlider.Hue, GUIColorSlider.Sat, GUIColorSlider.Value, true)
-	if not shared.VapeSwitchServers then
+	if not shared.feftySwitchServers then
 		if BlatantModeToggle.Enabled then
 			pcall(function()
-				local frame = GuiLibrary.CreateNotification("Blatant Enabled", "Vape is now in Blatant Mode.", 5.5, "assets/WarningNotification.png")
+				local frame = GuiLibrary.CreateNotification("Blatant Enabled", "fefty is now in Blatant Mode.", 5.5, "assets/WarningNotification.png")
 				frame.Frame.Frame.ImageColor3 = Color3.fromRGB(236, 129, 44)
 			end)
 		end
 		GuiLibrary.LoadedAnimation(welcomeMessage.Enabled)
 	else
-		shared.VapeSwitchServers = nil
+		shared.feftySwitchServers = nil
 	end
-	if shared.VapeOpenGui then
+	if shared.feftyOpenGui then
 		GuiLibrary.MainGui.ScaledGui.ClickGui.Visible = true
 		game:GetService("RunService"):SetRobloxGuiFocused(GuiLibrary.MainBlur.Size ~= 0) 
-		shared.VapeOpenGui = nil
+		shared.feftyOpenGui = nil
 	end
 
 	coroutine.resume(saveSettingsLoop)
-	shared.VapeFullyLoaded = true
+	shared.feftyFullyLoaded = true
 end
 
-if shared.VapeIndependent then
-	task.spawn(loadVape)
-	shared.VapeFullyLoaded = true
+if shared.feftyIndependent then
+	task.spawn(loadfefty)
+	shared.feftyFullyLoaded = true
 	return GuiLibrary
 else
-	loadVape()
+	loadfefty()
 end

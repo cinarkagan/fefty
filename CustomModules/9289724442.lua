@@ -13,7 +13,7 @@ local cam = workspace.CurrentCamera
 workspace:GetPropertyChangedSignal("CurrentCamera"):connect(function()
 	cam = (workspace.CurrentCamera or workspace:FindFirstChild("Camera") or Instance.new("Camera"))
 end)
-local targetinfo = shared.VapeTargetInfo
+local targetinfo = shared.feftyTargetInfo
 local collectionservice = game:GetService("CollectionService")
 local uis = game:GetService("UserInputService")
 local mouse = lplr:GetMouse()
@@ -78,10 +78,10 @@ local anticheatfunnyyes = false
 local staffleave
 local tpstring
 local networkownerfunc = isnetworkowner
-local vapeusers = {}
+local feftyusers = {}
 local function GetURL(scripturl)
-	if shared.VapeDeveloper then
-		return readfile("vape/"..scripturl)
+	if shared.feftyDeveloper then
+		return readfile("fefty/"..scripturl)
 	else
 		return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/main/"..scripturl, true)
 	end
@@ -179,13 +179,13 @@ end
 if place.Updated ~= "2021-11-05T03:38:34.0141481Z" then
 	local image = Instance.new("ImageLabel")
 	image.Size = UDim2.new(1, 0, 1, 36)
-	image.Image = getcustomassetfunc("vape/assets/UpdateImage.png")
+	image.Image = getcustomassetfunc("fefty/assets/UpdateImage.png")
 	image.Position = UDim2.new(0, 0, 0, -36)
 	image.ZIndex = 9
 	image.Parent = GuiLibrary["MainGui"]
     local textlabel = Instance.new("TextLabel")
     textlabel.Size = UDim2.new(1, 0, 1, 36)
-    textlabel.Text = "Vape is currently down for testing due to the prophunt update.\nThe discord has been copied to your clipboard."
+    textlabel.Text = "fefty is currently down for testing due to the prophunt update.\nThe discord has been copied to your clipboard."
 	textlabel.TextColor3 = Color3.new(1, 1, 1)
     textlabel.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
 	textlabel.BackgroundTransparency = 0.5
@@ -259,7 +259,7 @@ local function getcustomassetfunc(path)
 			textlabel:Remove()
 		end)
 		local req = requestfunc({
-			Url = "https://raw.githubusercontent.com/cinarkagan/fefty/main/"..path:gsub("vape/assets", "assets"),
+			Url = "https://raw.githubusercontent.com/cinarkagan/fefty/main/"..path:gsub("fefty/assets", "assets"),
 			Method = "GET"
 		})
 		writefile(path, req.Body)
@@ -377,7 +377,7 @@ do
 		entity.fullEntityRefresh()
 	end)
 	entity.isPlayerTargetable = function(plr)
-		return lplr ~= plr and shared.vapeteamcheck(plr) and friendCheck(plr) == nil
+		return lplr ~= plr and shared.feftyteamcheck(plr) and friendCheck(plr) == nil
 	end
 	entity.characterAdded = function(plr, char, localcheck)
         if char then
@@ -735,7 +735,7 @@ runcode(function()
 								end
 
 								
-								if isAlive(plr) and plr ~= lplr and (ESPTeammates["Enabled"] or shared.vapeteamcheck(plr)) then
+								if isAlive(plr) and plr ~= lplr and (ESPTeammates["Enabled"] or shared.feftyteamcheck(plr)) then
 									local rootPos, rootVis = cam:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
 									local rootSize = (plr.Character.HumanoidRootPart.Size.X * 1200) * (cam.ViewportSize.X / 1920)
 									local headPos, headVis = cam:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position + Vector3.new(0, 1 + plr.Character.Humanoid.HipHeight, 0))
@@ -790,7 +790,7 @@ runcode(function()
 									espfolderdrawing[plr.Name] = thing
 								end
 								
-								if isAlive(plr) and plr ~= lplr and (ESPTeammates["Enabled"] or shared.vapeteamcheck(plr)) then
+								if isAlive(plr) and plr ~= lplr and (ESPTeammates["Enabled"] or shared.feftyteamcheck(plr)) then
 									local rootPos, rootVis = cam:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
 									if rootVis and plr.Character:FindFirstChild((plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 and "Torso" or "UpperTorso")) and plr.Character:FindFirstChild((plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 and "Left Arm" or "LeftHand")) and plr.Character:FindFirstChild((plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 and "Right Arm" or "RightHand")) and plr.Character:FindFirstChild((plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 and "Left Leg" or "LeftFoot")) and plr.Character:FindFirstChild((plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 and "Right Leg" or "RightFoot")) and plr.Character:FindFirstChild("Head") then
 										local head = CalculateObjectPosition((plr.Character["Head"].CFrame).p)
@@ -942,7 +942,7 @@ runcode(function()
 									healthlineclone.Parent = thing
 								end
 								
-								if isAlive(plr) and plr ~= lplr and (ESPTeammates["Enabled"] or shared.vapeteamcheck(plr)) then
+								if isAlive(plr) and plr ~= lplr and (ESPTeammates["Enabled"] or shared.feftyteamcheck(plr)) then
 									local rootPos, rootVis = cam:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
 									local rootSize = (plr.Character.HumanoidRootPart.Size.X * 1200) * (cam.ViewportSize.X / 1920)
 									local headPos, headVis = cam:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position + Vector3.new(0, 1 + plr.Character.Humanoid.HipHeight, 0))
@@ -1009,7 +1009,7 @@ runcode(function()
 									line9.Parent = thing
 								end
 								
-								if isAlive(plr) and plr ~= lplr and (ESPTeammates["Enabled"] or shared.vapeteamcheck(plr)) then
+								if isAlive(plr) and plr ~= lplr and (ESPTeammates["Enabled"] or shared.feftyteamcheck(plr)) then
 									local rootPos, rootVis = cam:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
 									if rootVis and plr.Character:FindFirstChild((plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 and "Torso" or "UpperTorso")) and plr.Character:FindFirstChild((plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 and "Left Arm" or "LeftHand")) and plr.Character:FindFirstChild((plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 and "Right Arm" or "RightHand")) and plr.Character:FindFirstChild((plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 and "Left Leg" or "LeftFoot")) and plr.Character:FindFirstChild((plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 and "Right Leg" or "RightFoot")) and plr.Character:FindFirstChild("Head") then
 										thing.Visible = true
@@ -1210,7 +1210,7 @@ runcode(function()
 								thing = nametagsfolderdrawing[plr.Name]
 							end
 
-							if isAlive(plr) and plr ~= lplr and (NameTagsTeammates["Enabled"] or shared.vapeteamcheck(plr)) then
+							if isAlive(plr) and plr ~= lplr and (NameTagsTeammates["Enabled"] or shared.feftyteamcheck(plr)) then
 								local headPos, headVis = cam:WorldToViewportPoint((plr.Character.HumanoidRootPart:GetRenderCFrame() * CFrame.new(0, 1 + plr.Character.HumanoidRootPart.Size.Y, 0)).Position)
 								
 								if headVis then
@@ -1264,7 +1264,7 @@ runcode(function()
 								thing.Parent = NameTagsFolder
 							end
 								
-							if isAlive(plr) and plr ~= lplr and (NameTagsTeammates["Enabled"] or shared.vapeteamcheck(plr)) then
+							if isAlive(plr) and plr ~= lplr and (NameTagsTeammates["Enabled"] or shared.feftyteamcheck(plr)) then
 								local headPos, headVis = cam:WorldToViewportPoint((plr.Character.HumanoidRootPart:GetRenderCFrame() * CFrame.new(0, 1 + plr.Character.HumanoidRootPart.Size.Y, 0)).Position)
 								headPos = headPos
 								
@@ -1401,7 +1401,7 @@ pcall(function()
 									tracersdrawingtab[plr.Name] = thing
 								end
 
-								if isAlive(plr) and plr ~= lplr and (TracersTeammates["Enabled"] or shared.vapeteamcheck(plr)) then
+								if isAlive(plr) and plr ~= lplr and (TracersTeammates["Enabled"] or shared.feftyteamcheck(plr)) then
 									local rootScrPos = cam:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
 									local tempPos = cam.CFrame:pointToObjectSpace(plr.Character.HumanoidRootPart.Position)
 									if rootScrPos.Z < 0 then
@@ -1437,7 +1437,7 @@ pcall(function()
 									thing.Parent = TracersFolder
 								end
 								
-								if isAlive(plr) and plr ~= lplr and (TracersTeammates["Enabled"] or shared.vapeteamcheck(plr)) then
+								if isAlive(plr) and plr ~= lplr and (TracersTeammates["Enabled"] or shared.feftyteamcheck(plr)) then
 									local rootScrPos = cam:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
 									local tempPos = cam.CFrame:pointToObjectSpace(plr.Character.HumanoidRootPart.Position)
 									if rootScrPos.Z < 0 then
@@ -1896,7 +1896,7 @@ runcode(function()
 		["Name"] = "New Highlight Chams",
 		["Function"] = function(callback)
 			if callback then
-				local suc = pcall(function() return readfile("vape/Profiles/HighlightCheck.vapesetting.txt") end)
+				local suc = pcall(function() return readfile("fefty/Profiles/HighlightCheck.feftysetting.txt") end)
 				if not suc then
 					if searchNewHighlight["Enabled"] then
 						searchNewHighlight["ToggleButton"](false)
@@ -1908,7 +1908,7 @@ runcode(function()
 					frame.Parent = GuiLibrary["MainGui"].ScaledGui
 					local frameIcon = Instance.new("ImageLabel")
 					frameIcon.Size = UDim2.new(0, 19, 0, 16)
-					frameIcon.Image = getcustomassetfunc("vape/assets/ProfilesIcon.png")
+					frameIcon.Image = getcustomassetfunc("fefty/assets/ProfilesIcon.png")
 					frameIcon.Name = "WindowIcon"
 					frameIcon.BackgroundTransparency = 1
 					frameIcon.Position = UDim2.new(0, 10, 0, 13)
@@ -1931,7 +1931,7 @@ runcode(function()
 					local frameShadow = Instance.new("ImageLabel")
 					frameShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 					frameShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-					frameShadow.Image = getcustomassetfunc("vape/assets/WindowBlur.png")
+					frameShadow.Image = getcustomassetfunc("fefty/assets/WindowBlur.png")
 					frameShadow.BackgroundTransparency = 1
 					frameShadow.ZIndex = -1
 					frameShadow.Size = UDim2.new(1, 6, 1, 6)
@@ -1944,7 +1944,7 @@ runcode(function()
 					frameExitButton.ImageColor3 = Color3.fromRGB(121, 121, 121)
 					frameExitButton.Size = UDim2.new(0, 24, 0, 24)
 					frameExitButton.AutoButtonColor = false
-					frameExitButton.Image = getcustomassetfunc("vape/assets/ExitIcon1.png")
+					frameExitButton.Image = getcustomassetfunc("fefty/assets/ExitIcon1.png")
 					frameExitButton.Visible = true
 					frameExitButton.Position = UDim2.new(1, -31, 0, 8)
 					frameExitButton.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
@@ -1985,7 +1985,7 @@ runcode(function()
 					framebutton2.Parent = frame
 					framebutton2.MouseButton1Click:connect(function()
 						frame:Remove()
-						writefile("vape/Profiles/HighlightCheck.vapesetting.txt", "")
+						writefile("fefty/Profiles/HighlightCheck.feftysetting.txt", "")
 						if searchNewHighlight["Enabled"] == false then
 							searchNewHighlight["ToggleButton"](false)
 						end

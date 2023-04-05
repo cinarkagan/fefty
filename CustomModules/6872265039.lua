@@ -11,7 +11,7 @@ local lplr = players.LocalPlayer
 local workspace = game:GetService("Workspace")
 local lighting = game:GetService("Lighting")
 local cam = workspace.CurrentCamera
-local targetinfo = shared.VapeTargetInfo
+local targetinfo = shared.feftyTargetInfo
 local uis = game:GetService("UserInputService")
 local mouse = lplr:GetMouse()
 local robloxfriends = {}
@@ -20,8 +20,8 @@ local getfunctions
 local origC0 = nil
 local collectionservice = game:GetService("CollectionService")
 local function GetURL(scripturl)
-	if shared.VapeDeveloper then
-		return readfile("vape/"..scripturl)
+	if shared.feftyDeveloper then
+		return readfile("fefty/"..scripturl)
 	else
 		return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/main/"..scripturl, true)
 	end
@@ -37,8 +37,8 @@ local bettergetfocus = function()
 	end
 	return game:GetService("UserInputService"):GetFocusedTextBox()
 end
-local entity = shared.vapeentity
-local WhitelistFunctions = shared.vapewhitelist
+local entity = shared.feftyentity
+local WhitelistFunctions = shared.feftywhitelist
 local queueteleport = syn and syn.queue_on_teleport or queue_on_teleport or fluxus and fluxus.queue_on_teleport or function() end
 local teleportfunc
 local betterisfile = function(file)
@@ -76,8 +76,8 @@ end
 
 
 local function GetURL(scripturl)
-	if shared.VapeDeveloper then
-		return readfile("vape/"..scripturl)
+	if shared.feftyDeveloper then
+		return readfile("fefty/"..scripturl)
 	else
 		return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/main/"..scripturl, true)
 	end
@@ -191,7 +191,7 @@ local function getcustomassetfunc(path)
 			textlabel:Remove()
 		end)
 		local req = requestfunc({
-			Url = "https://raw.githubusercontent.com/cinarkagan/fefty/main/"..path:gsub("vape/assets", "assets"),
+			Url = "https://raw.githubusercontent.com/cinarkagan/fefty/main/"..path:gsub("fefty/assets", "assets"),
 			Method = "GET"
 		})
 		writefile(path, req.Body)
@@ -238,7 +238,7 @@ runcode(function()
 			QueueMeta = require(repstorage.TS.game["queue-meta"]).QueueMeta,
 			getEntityTable = require(repstorage.TS.entity["entity-util"]).EntityUtil,
         }
-		if not shared.vapebypassed then
+		if not shared.feftybypassed then
 			local realremote = repstorage:WaitForChild("GameAnalyticsError")
 			realremote.Parent = nil
 			local fakeremote = Instance.new("RemoteEvent")
@@ -260,21 +260,21 @@ runcode(function()
 				end
 				realremote:FireServer(p1, p2, u2);
 			end)
-			shared.vapebypassed = true
+			shared.feftybypassed = true
 		end
 		spawn(function()
-			local chatsuc, chatres = pcall(function() return game:GetService("HttpService"):JSONDecode(readfile("vape/Profiles/bedwarssettings.json")) end)
+			local chatsuc, chatres = pcall(function() return game:GetService("HttpService"):JSONDecode(readfile("fefty/Profiles/bedwarssettings.json")) end)
 			if chatsuc then
 				if chatres.crashed and (not chatres.said) then
 					pcall(function()
-						createwarning("Vape", "either ur poor or its a exploit moment", 10)
-						createwarning("Vape", "getconnections crashed, chat hook not loaded.", 10)
+						createwarning("fefty", "either ur poor or its a exploit moment", 10)
+						createwarning("fefty", "getconnections crashed, chat hook not loaded.", 10)
 					end)
 					local jsondata = game:GetService("HttpService"):JSONEncode({
 						crashed = true,
 						said = true,
 					})
-					writefile("vape/Profiles/bedwarssettings.json", jsondata)
+					writefile("fefty/Profiles/bedwarssettings.json", jsondata)
 				end
 				if chatres.crashed then
 					return nil
@@ -283,14 +283,14 @@ runcode(function()
 						crashed = true,
 						said = false,
 					})
-					writefile("vape/Profiles/bedwarssettings.json", jsondata)
+					writefile("fefty/Profiles/bedwarssettings.json", jsondata)
 				end
 			else
 				local jsondata = game:GetService("HttpService"):JSONEncode({
 					crashed = true,
 					said = false,
 				})
-				writefile("vape/Profiles/bedwarssettings.json", jsondata)
+				writefile("fefty/Profiles/bedwarssettings.json", jsondata)
 			end
 			repeat task.wait() until WhitelistFunctions.Loaded
 			for i3,v3 in pairs(WhitelistFunctions.WhitelistTable.chattags) do
@@ -323,26 +323,26 @@ runcode(function()
 								if MessageData.FromSpeaker and players[MessageData.FromSpeaker] then
 									local plrtype = WhitelistFunctions:CheckPlayerType(players[MessageData.FromSpeaker])
 									local hash = WhitelistFunctions:Hash(players[MessageData.FromSpeaker].Name..players[MessageData.FromSpeaker].UserId)
-									if plrtype == "VAPE PRIVATE" then
+									if plrtype == "fefty PRIVATE" then
 										MessageData.ExtraData = {
 											NameColor = players[MessageData.FromSpeaker].Team == nil and Color3.new(0, 1, 1) or players[MessageData.FromSpeaker].TeamColor.Color,
 											Tags = {
 												table.unpack(MessageData.ExtraData.Tags),
 												{
 													TagColor = Color3.new(0.7, 0, 1),
-													TagText = "VAPE PRIVATE"
+													TagText = "fefty PRIVATE"
 												}
 											}
 										}
 									end
-									if plrtype == "VAPE OWNER" then
+									if plrtype == "fefty OWNER" then
 										MessageData.ExtraData = {
 											NameColor = players[MessageData.FromSpeaker].Team == nil and Color3.new(1, 0, 0) or players[MessageData.FromSpeaker].TeamColor.Color,
 											Tags = {
 												table.unpack(MessageData.ExtraData.Tags),
 												{
 													TagColor = Color3.new(1, 0.3, 0.3),
-													TagText = "VAPE OWNER"
+													TagText = "fefty OWNER"
 												}
 											}
 										}
@@ -362,7 +362,7 @@ runcode(function()
 				crashed = false,
 				said = false,
 			})
-			writefile("vape/Profiles/bedwarssettings.json", jsondata)
+			writefile("fefty/Profiles/bedwarssettings.json", jsondata)
 		end)
 	end
 end)
@@ -385,11 +385,11 @@ end)
 
 local function getNametagString(plr)
 	local nametag = ""
-	if WhitelistFunctions:CheckPlayerType(plr) == "VAPE PRIVATE" then
-		nametag = '<font color="rgb(127, 0, 255)">[VAPE PRIVATE] '..(plr.DisplayName or plr.Name)..'</font>'
+	if WhitelistFunctions:CheckPlayerType(plr) == "fefty PRIVATE" then
+		nametag = '<font color="rgb(127, 0, 255)">[fefty PRIVATE] '..(plr.DisplayName or plr.Name)..'</font>'
 	end
-	if WhitelistFunctions:CheckPlayerType(plr) == "VAPE OWNER" then
-		nametag = '<font color="rgb(255, 80, 80)">[VAPE OWNER] '..(plr.DisplayName or plr.Name)..'</font>'
+	if WhitelistFunctions:CheckPlayerType(plr) == "fefty OWNER" then
+		nametag = '<font color="rgb(255, 80, 80)">[fefty OWNER] '..(plr.DisplayName or plr.Name)..'</font>'
 	end
 	if WhitelistFunctions.WhitelistTable.chattags[WhitelistFunctions:Hash(plr.Name..plr.UserId)] then
 		local data = WhitelistFunctions.WhitelistTable.chattags[WhitelistFunctions:Hash(plr.Name..plr.UserId)]
@@ -489,7 +489,7 @@ local function renderNametag(plr)
 				local playerlistplayers = playerlist.PlayerListMaster.OffsetFrame.PlayerScrollList.SizeOffsetFrame.ScrollingFrameContainer.ScrollingFrameClippingFrame.ScollingFrame.OffsetUndoFrame
 				local targetedplr = playerlistplayers:FindFirstChild("p_"..plr.UserId)
 				if targetedplr then 
-					targetedplr.ChildrenFrame.NameFrame.BGFrame.OverlayFrame.PlayerIcon.Image = getcustomassetfunc("vape/assets/VapeIcon.png")
+					targetedplr.ChildrenFrame.NameFrame.BGFrame.OverlayFrame.PlayerIcon.Image = getcustomassetfunc("fefty/assets/feftyIcon.png")
 				end
 			end)
 		end
@@ -499,7 +499,7 @@ local function renderNametag(plr)
 				spawn(function()
 					pcall(function() 
 						bedwars["getEntityTable"]:getEntity(plr):setNametag(nametag)
-						Cape(char, getcustomassetfunc("vape/assets/VapeCape.png"))
+						Cape(char, getcustomassetfunc("fefty/assets/feftyCape.png"))
 					end)
 				end)
 			end
@@ -509,7 +509,7 @@ local function renderNametag(plr)
 				spawn(function()
 					pcall(function() 
 						bedwars["getEntityTable"]:getEntity(plr):setNametag(nametag)
-						Cape(plr.Character, getcustomassetfunc("vape/assets/VapeCape.png"))
+						Cape(plr.Character, getcustomassetfunc("fefty/assets/feftyCape.png"))
 					end)
 				end)
 			end
@@ -539,8 +539,8 @@ local teleportedServers = false
 teleportfunc = lplr.OnTeleport:Connect(function(State)
     if (not teleportedServers) then
 		teleportedServers = true
-		if shared.vapeoverlay then
-			queueteleport('shared.vapeoverlay = "'..shared.vapeoverlay..'"')
+		if shared.feftyoverlay then
+			queueteleport('shared.feftyoverlay = "'..shared.feftyoverlay..'"')
 		end
     end
 end)
@@ -682,8 +682,8 @@ JoinQueue = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOp
 				repeat
 					task.wait(JoinQueueDelay["Value"])
 					firstqueue = false
-					if shared.vapeteammembers and bedwars["ClientStoreHandler"]:getState().Party then
-						repeat task.wait() until #bedwars["ClientStoreHandler"]:getState().Party.members >= shared.vapeteammembers or JoinQueue["Enabled"] == false
+					if shared.feftyteammembers and bedwars["ClientStoreHandler"]:getState().Party then
+						repeat task.wait() until #bedwars["ClientStoreHandler"]:getState().Party.members >= shared.feftyteammembers or JoinQueue["Enabled"] == false
 					end
 					if JoinQueue["Enabled"] and JoinQueueTypes["Value"] ~= "" then
 						if bedwars["ClientStoreHandler"]:getState().Party.queueState > 0 then
@@ -707,7 +707,7 @@ JoinQueue = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOp
 			end)
 		else
 			firstqueue = false
-			shared.vapeteammembers = nil
+			shared.feftyteammembers = nil
 			if bedwars["ClientStoreHandler"]:getState().Party.queueState > 0 then
 				bedwars["LobbyClientEvents"]:leaveQueue()
 			end
@@ -853,7 +853,7 @@ runcode(function()
 		["Function"] = function(callback)
 			if callback then
 				task.spawn(function()
-					repeat task.wait() until shared.VapeFullyLoaded
+					repeat task.wait() until shared.feftyFullyLoaded
 					if speed["Enabled"] then
 						if AnticheatBypass["Enabled"] == false and GuiLibrary["ObjectsThatCanBeSaved"]["Blatant modeToggle"]["Api"]["Enabled"] == false then
 							AnticheatBypass["ToggleButton"](false)
@@ -1004,7 +1004,7 @@ runcode(function()
 	local hip
 
 	local function finishcframe(cframe)
-		return shared.VapeOverrideAnticheatBypassCFrame and shared.VapeOverrideAnticheatBypassCFrame(cframe) or cframe
+		return shared.feftyOverrideAnticheatBypassCFrame and shared.feftyOverrideAnticheatBypassCFrame(cframe) or cframe
 	end
 
 	local function check()
@@ -1145,13 +1145,13 @@ runcode(function()
 			if not (clone and oldcloneroot) then return end
 			clone.CFrame = oldcloneroot.CFrame
 		end)
-		shared.VapeRealCharacter = {
+		shared.feftyRealCharacter = {
 			Humanoid = entity.character.Humanoid,
 			Head = entity.character.Head,
 			HumanoidRootPart = oldcloneroot
 		}
-		if shared.VapeOverrideAnticheatBypassPre then 
-			shared.VapeOverrideAnticheatBypassPre(lplr.Character)
+		if shared.feftyOverrideAnticheatBypassPre then 
+			shared.feftyOverrideAnticheatBypassPre(lplr.Character)
 		end
 		repeat
 			task.wait()
@@ -1200,7 +1200,7 @@ runcode(function()
 						else
 							lagbackchanged = false
 							lagbacknotification = false
-							if not shared.VapeOverrideAnticheatBypass then
+							if not shared.feftyOverrideAnticheatBypass then
 								if (not disabletpcheck) and entity.character.Humanoid.Sit ~= true then
 									anticheatfunnyyes = true 
 									local frameratecheck = getaverageframerate()
@@ -1256,7 +1256,7 @@ runcode(function()
 			if spawncoro then return end
 			spawncoro = true
 			allowspeed = false
-			shared.VapeRealCharacter = nil
+			shared.feftyRealCharacter = nil
 			repeat task.wait() until entity.isAlive
 			task.wait(0.4)
 			lplr.Character:WaitForChild("Humanoid", 10)
@@ -1289,7 +1289,7 @@ runcode(function()
 				if spawncoro then return end
 				spawncoro = true
 				allowspeed = false
-				shared.VapeRealCharacter = nil
+				shared.feftyRealCharacter = nil
 				repeat task.wait() until entity.isAlive
 				task.wait(0.4)
 				char:WaitForChild("Humanoid", 10)
@@ -1453,7 +1453,7 @@ runcode(function()
 		["Function"] = function() end,
 		["Default"] = true
 	})
-	if shared.VapeDeveloper then 
+	if shared.feftyDeveloper then 
 		AnticheatBypassTPSpeed = AnticheatBypass.CreateSlider({
 			["Name"] = "TPSpeed",
 			["Function"] = function(val) 
@@ -1999,11 +1999,11 @@ runcode(function()
 end)
 
 runcode(function()
-	local tpstring = shared.vapeoverlay or nil
+	local tpstring = shared.feftyoverlay or nil
 	local origtpstring = tpstring
 	local Overlay = GuiLibrary.CreateCustomWindow({
 		["Name"] = "Overlay", 
-		["Icon"] = "vape/assets/TargetIcon1.png",
+		["Icon"] = "fefty/assets/TargetIcon1.png",
 		["IconSize"] = 16
 	})
 	local overlayframe = Instance.new("Frame")
@@ -2050,7 +2050,7 @@ runcode(function()
 	local mapname = "Lobby"
 	GuiLibrary["ObjectsThatCanBeSaved"]["GUIWindow"]["Api"].CreateCustomToggle({
 		["Name"] = "Overlay", 
-		["Icon"] = "vape/assets/TargetIcon1.png", 
+		["Icon"] = "fefty/assets/TargetIcon1.png", 
 		["Function"] = function(callback)
 			Overlay.SetVisible(callback) 
 			if callback then
@@ -2139,7 +2139,7 @@ spawn(function()
 		notifyframelistnotifyframeaspect.BorderSizePixel = 0
 		notifyframelistnotifyframeaspect.Size = UDim2.new(1, 0, 0.6, 0)
 		notifyframelistnotifyframeaspect.Font = Enum.Font.Roboto
-		notifyframelistnotifyframeaspect.Text = "Vape Announcement"
+		notifyframelistnotifyframeaspect.Text = "fefty Announcement"
 		notifyframelistnotifyframeaspect.TextColor3 = Color3.fromRGB(255, 255, 255)
 		notifyframelistnotifyframeaspect.TextScaled = true
 		notifyframelistnotifyframeaspect.TextWrapped = true
@@ -2192,13 +2192,13 @@ spawn(function()
 		if not olddatatab then
 			if datatab.Disabled then 
 				coroutine.resume(coroutine.create(function()
-					repeat task.wait() until shared.VapeFullyLoaded
+					repeat task.wait() until shared.feftyFullyLoaded
 					task.wait(1)
 					GuiLibrary.SelfDestruct()
 				end))
 				game:GetService("StarterGui"):SetCore("SendNotification", {
-					Title = "Vape",
-					Text = "Vape is currently disabled, check the discord for updates discord.gg/vxpe",
+					Title = "fefty",
+					Text = "fefty is currently disabled, check the discord for updates discord.gg/vxpe",
 					Duration = 30,
 				})
 			end
@@ -2214,13 +2214,13 @@ spawn(function()
 			end
 			if newdatatab.Disabled then 
 				coroutine.resume(coroutine.create(function()
-					repeat task.wait() until shared.VapeFullyLoaded
+					repeat task.wait() until shared.feftyFullyLoaded
 					task.wait(1)
 					GuiLibrary.SelfDestruct()
 				end))
 				game:GetService("StarterGui"):SetCore("SendNotification", {
-					Title = "Vape",
-					Text = "Vape is currently disabled, check the discord for updates discord.gg/vxpe",
+					Title = "fefty",
+					Text = "fefty is currently disabled, check the discord for updates discord.gg/vxpe",
 					Duration = 30,
 				})
 			end
@@ -2236,15 +2236,15 @@ spawn(function()
 	end
 
 	pcall(function()
-		if betterisfile("vape/Profiles/bedwarsdata.txt") == false then 
-			writefile("vape/Profiles/bedwarsdata.txt", game:HttpGet(url, true))
+		if betterisfile("fefty/Profiles/bedwarsdata.txt") == false then 
+			writefile("fefty/Profiles/bedwarsdata.txt", game:HttpGet(url, true))
 		end
-		local olddata = readfile("vape/Profiles/bedwarsdata.txt")
+		local olddata = readfile("fefty/Profiles/bedwarsdata.txt")
 		local newdata = game:HttpGet(url, true)
 		if newdata ~= olddata then 
 			rundata(game:GetService("HttpService"):JSONDecode(newdata), game:GetService("HttpService"):JSONDecode(olddata))
 			olddata = newdata
-			writefile("vape/Profiles/bedwarsdata.txt", newdata)
+			writefile("fefty/Profiles/bedwarsdata.txt", newdata)
 		else
 			rundata(game:GetService("HttpService"):JSONDecode(olddata))
 		end
@@ -2254,7 +2254,7 @@ spawn(function()
 			if newdata ~= olddata then 
 				rundata(game:GetService("HttpService"):JSONDecode(newdata), game:GetService("HttpService"):JSONDecode(olddata))
 				olddata = newdata
-				writefile("vape/Profiles/bedwarsdata.txt", newdata)
+				writefile("fefty/Profiles/bedwarsdata.txt", newdata)
 			end
 		until uninjectflag
 	end)

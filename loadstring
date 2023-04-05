@@ -1,0 +1,1 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/main/NewMainScript.lua", true))()

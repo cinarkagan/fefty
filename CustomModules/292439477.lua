@@ -3,7 +3,7 @@
 	mickeydev - Bypass for the actor garbage (thanks exploit developers, very cool) - https://v3rmillion.net/showthread.php?tid=1195926
 ]]
 local bypassScript = [[
-	shared.feftyWaiting = true
+	shared.VapeWaiting = true
 	-- variables
 	local runService = game:GetService("RunService");
 	local replicatedFirst = game:GetService("ReplicatedFirst");
@@ -62,7 +62,7 @@ local cam = workspace.CurrentCamera
 workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
 	cam = (workspace.CurrentCamera or workspace:FindFirstChildWhichIsA("Camera") or Instance.new("Camera"))
 end)
-local targetinfo = shared.feftyTargetInfo
+local targetinfo = shared.VapeTargetInfo
 local uis = game:GetService("UserInputService")
 local v3check = syn and syn.toast_notification and "V3" or ""
 local networkownertick = tick()
@@ -78,12 +78,12 @@ local betterisfile = function(file)
 	return suc and res ~= nil
 end
 local function GetURL(scripturl)
-	if shared.feftyDeveloper then
-		assert(betterisfile("fefty/"..scripturl), "File not found : fefty/"..scripturl)
-		return readfile("fefty/"..scripturl)
+	if shared.VapeDeveloper then
+		assert(betterisfile("vape/"..scripturl), "File not found : vape/"..scripturl)
+		return readfile("vape/"..scripturl)
 	else
 		local res = game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/main/"..scripturl, true)
-		assert(res ~= "404: Not Found", "File not found : fefty/"..scripturl)
+		assert(res ~= "404: Not Found", "File not found : vape/"..scripturl)
 		return res
 	end
 end
@@ -104,7 +104,7 @@ end
 local alreadyjoined = shared.scriptalreadyjoinedservers and httpservice:JSONDecode(shared.scriptalreadyjoinedservers) or {}
 local queueteleport = syn and syn.queue_on_teleport or queue_on_teleport or fluxus and fluxus.queue_on_teleport
 local getasset = getsynasset or getcustomasset or function(location) return "rbxasset://"..location end
-if shared.feftyWaiting then repeat task.wait() until shared.RequireTable end
+if shared.VapeWaiting then repeat task.wait() until shared.RequireTable end
 if shared.RequireTable == nil then 
 	if shared.RequireTable == nil then
 		if queueteleport then
@@ -117,13 +117,13 @@ if shared.RequireTable == nil then
             prompt._hideErrorCode = true
             local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
             prompt:setParent(gui)
-            prompt:setErrorTitle("fefty")
+            prompt:setErrorTitle("Vape")
             prompt:updateButtons({{
                 Text = "OK",
                 Callback = function() prompt:_close() end,
                 Primary = true
             }}, 'Default')
-            prompt:_open("Your exploit is unsupported by Phantom Forces fefty.")
+            prompt:_open("Your exploit is unsupported by Phantom Forces Vape.")
             task.wait(9e9)
 		end
 	end
@@ -175,7 +175,7 @@ do
 	end
 end
 
-local WhitelistFunctions = shared.feftywhitelist
+local WhitelistFunctions = shared.vapewhitelist
 local function createwarning(title, text, delay)
 	local suc, res = pcall(function()
 		local frame = GuiLibrary["CreateNotification"](title, text, delay, "assets/WarningNotification.png")
@@ -219,7 +219,7 @@ local function getcustomassetfunc(path)
 			textlabel:Remove()
 		end)
 		local req = requestfunc({
-			Url = "https://raw.githubusercontent.com/cinarkagan/fefty/main/"..path:gsub("fefty/assets", "assets"),
+			Url = "https://raw.githubusercontent.com/cinarkagan/fefty/main/"..path:gsub("vape/assets", "assets"),
 			Method = "GET"
 		})
 		writefile(path, req.Body)
@@ -502,9 +502,9 @@ GuiLibrary.RemoveObject("TracersOptionsButton")
 
 local teleported = false
 local teleportfunc = game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
-	if (not teleported) and (not shared.feftyIndependent) then
+	if (not teleported) and (not shared.VapeIndependent) then
 		teleported = true
-		local finaltp = (tpstring and 'shared.feftyoverlay = "'..tpstring..'"\n' or "").."shared.scriptalreadyjoinedservers = '"..httpservice:JSONEncode(alreadyjoined).."'\n"..bypassScript
+		local finaltp = (tpstring and 'shared.vapeoverlay = "'..tpstring..'"\n' or "").."shared.scriptalreadyjoinedservers = '"..httpservice:JSONEncode(alreadyjoined).."'\n"..bypassScript
 		queueteleport(finaltp)
 	end
 end)
@@ -1912,11 +1912,11 @@ runcode(function()
 end)
 
 runcode(function()
-	tpstring = shared.feftyoverlay or nil
+	tpstring = shared.vapeoverlay or nil
 	local origtpstring = tpstring
 	local Overlay = GuiLibrary.CreateCustomWindow({
 		["Name"] = "Overlay", 
-		["Icon"] = "fefty/assets/TargetIcon1.png",
+		["Icon"] = "vape/assets/TargetIcon1.png",
 		["IconSize"] = 16
 	})
 	local overlayframe = Instance.new("Frame")
@@ -1961,7 +1961,7 @@ runcode(function()
 	Overlay["Bypass"] = true
 	GuiLibrary["ObjectsThatCanBeSaved"]["GUIWindow"]["Api"].CreateCustomToggle({
 		["Name"] = "Overlay", 
-		["Icon"] = "fefty/assets/TargetIcon1.png", 
+		["Icon"] = "vape/assets/TargetIcon1.png", 
 		["Function"] = function(callback)
 			Overlay.SetVisible(callback) 
 			if callback then

@@ -8,11 +8,11 @@ local runService = game:GetService("RunService")
 local replicatedStorageService = game:GetService("ReplicatedStorage")
 local gameCamera = workspace.CurrentCamera
 local lplr = playersService.LocalPlayer
-local feftyConnections = {}
-local feftyCachedAssets = {}
-local feftyTargetInfo = shared.feftyTargetInfo
-local feftyInjected = true
-table.insert(feftyConnections, workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+local vapeConnections = {}
+local vapeCachedAssets = {}
+local vapeTargetInfo = shared.VapeTargetInfo
+local vapeInjected = true
+table.insert(vapeConnections, workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
 	gameCamera = workspace.CurrentCamera or workspace:FindFirstChildWhichIsA("Camera")
 end))
 local isfile = isfile or function(file)
@@ -45,18 +45,18 @@ local worldtoviewportpoint = function(pos)
 	return gameCamera.WorldToViewportPoint(gameCamera, pos)
 end
 
-local function feftyGithubRequest(scripturl)
-	if not isfile("fefty/"..scripturl) then
-		local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("fefty/commithash.txt").."/"..scripturl, true) end)
+local function vapeGithubRequest(scripturl)
+	if not isfile("vape/"..scripturl) then
+		local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
 		assert(suc, res)
 		assert(res ~= "404: Not Found", res)
 		if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
-		writefile("fefty/"..scripturl, res)
+		writefile("vape/"..scripturl, res)
 	end
-	return readfile("fefty/"..scripturl)
+	return readfile("vape/"..scripturl)
 end
 
-local function downloadfeftyAsset(path)
+local function downloadVapeAsset(path)
 	if not isfile(path) then
 		task.spawn(function()
 			local textlabel = Instance.new("TextLabel")
@@ -72,15 +72,15 @@ local function downloadfeftyAsset(path)
 			repeat task.wait() until isfile(path)
 			textlabel:Destroy()
 		end)
-		local suc, req = pcall(function() return feftyGithubRequest(path:gsub("fefty/assets", "assets")) end)
+		local suc, req = pcall(function() return vapeGithubRequest(path:gsub("vape/assets", "assets")) end)
         if suc and req then
 		    writefile(path, req)
         else
             return ""
         end
 	end
-	if not feftyCachedAssets[path] then feftyCachedAssets[path] = getcustomasset(path) end
-	return feftyCachedAssets[path] 
+	if not vapeCachedAssets[path] then vapeCachedAssets[path] = getcustomasset(path) end
+	return vapeCachedAssets[path] 
 end
 
 local function warningNotification(title, text, delay)
@@ -123,14 +123,14 @@ local function getPlayerColor(plr)
 	return tostring(plr.TeamColor) ~= "White" and plr.TeamColor.Color
 end
 
-local entityLibrary = loadstring(feftyGithubRequest("Libraries/entityHandler.lua"))()
-shared.feftyentity = entityLibrary
+local entityLibrary = loadstring(vapeGithubRequest("Libraries/entityHandler.lua"))()
+shared.vapeentity = entityLibrary
 do
 	entityLibrary.selfDestruct()
-	table.insert(feftyConnections, GuiLibrary.ObjectsThatCanBeSaved.FriendsListTextCircleList.Api.FriendRefresh.Event:Connect(function()
+	table.insert(vapeConnections, GuiLibrary.ObjectsThatCanBeSaved.FriendsListTextCircleList.Api.FriendRefresh.Event:Connect(function()
 		entityLibrary.fullEntityRefresh()
 	end))
-	table.insert(feftyConnections, GuiLibrary.ObjectsThatCanBeSaved["Teams by colorToggle"].Api.Refresh.Event:Connect(function()
+	table.insert(vapeConnections, GuiLibrary.ObjectsThatCanBeSaved["Teams by colorToggle"].Api.Refresh.Event:Connect(function()
 		entityLibrary.fullEntityRefresh()
 	end))
 	local oldUpdateBehavior = entityLibrary.getUpdateConnections
@@ -174,7 +174,7 @@ do
 				end
 				entityLibrary.LocalPosition = closestpos
 			end
-		until not feftyInjected
+		until not vapeInjected
 	end)
 end
 
@@ -300,8 +300,8 @@ local function AllNearPosition(distance, amount, checktab)
 end
 
 local WhitelistFunctions = {StoredHashes = {}, PriorityList = {
-	["fefty OWNER"] = 3,
-	["fefty PRIVATE"] = 2,
+	["VAPE OWNER"] = 3,
+	["VAPE PRIVATE"] = 2,
 	Default = 1
 }, WhitelistTable = {}, Loaded = false, CustomTags = {}}
 do
@@ -366,7 +366,7 @@ do
 								widgetheadertext.TextXAlignment = Enum.TextXAlignment.Left
 								widgetheadertext.TextSize = 18
 								widgetheadertext.Font = Enum.Font.Roboto
-								widgetheadertext.Text = "<b>fefty</b>"
+								widgetheadertext.Text = "<b>Vape</b>"
 								widgetheadertext.TextColor3 = Color3.new(1, 1, 1)
 								widgetheadertext.Parent = widgetheader
 								local widgetheadercorner = Instance.new("UICorner")
@@ -418,7 +418,7 @@ do
 								widgettext.Font = Enum.Font.Legacy
 								widgettext.TextScaled = true 
 								widgettext.RichText = true
-								widgettext.Text = [[<b><font color="#FFFFFF">Hello, fefty is currently restricted for you.</font></b>
+								widgettext.Text = [[<b><font color="#FFFFFF">Hello, vape is currently restricted for you.</font></b>
 
 Stop trying to bypass my whitelist system, I'll keep fighting until you give up yknow
 								]]
@@ -443,11 +443,11 @@ Stop trying to bypass my whitelist system, I'll keep fighting until you give up 
 							continue
 						end
 						task.wait(5)
-					until not feftyInjected
+					until not vapeInjected
 				end)
 			end
 		end)
-		shalib = loadstring(feftyGithubRequest("Libraries/sha.lua"))()
+		shalib = loadstring(vapeGithubRequest("Libraries/sha.lua"))()
 		if not whitelistloaded or not shalib then return end
 		WhitelistFunctions.Loaded = true
 		entityLibrary.fullEntityRefresh()
@@ -466,10 +466,10 @@ Stop trying to bypass my whitelist system, I'll keep fighting until you give up 
 		local plrstr, plrattackable, plrtag = WhitelistFunctions:CheckPlayerType(plr)
 		local hash = WhitelistFunctions:Hash(plr.Name..plr.UserId)
 		if plrtag then
-			if plrstr == "fefty OWNER" then
-				return "[fefty OWNER] "
-			elseif plrstr == "fefty PRIVATE" then 
-				return "[fefty PRIVATE] "
+			if plrstr == "VAPE OWNER" then
+				return "[VAPE OWNER] "
+			elseif plrstr == "VAPE PRIVATE" then 
+				return "[VAPE PRIVATE] "
 			elseif WhitelistFunctions.WhitelistTable.chattags[hash] then
 				local data = WhitelistFunctions.WhitelistTable.chattags[hash]
 				local newnametag = ""
@@ -497,7 +497,7 @@ Stop trying to bypass my whitelist system, I'll keep fighting until you give up 
 		local private = WhitelistFunctions:FindWhitelistTable(WhitelistFunctions.WhitelistTable.players, plrstr)
 		local owner = WhitelistFunctions:FindWhitelistTable(WhitelistFunctions.WhitelistTable.owners, plrstr)
 		local tab = owner or private
-		playertype = owner and "fefty OWNER" or private and "fefty PRIVATE" or "DEFAULT"
+		playertype = owner and "VAPE OWNER" or private and "VAPE PRIVATE" or "DEFAULT"
 		if tab then 
 			playerattackable = tab.attackable == nil or tab.attackable
 			plrtag = not tab.notag
@@ -522,7 +522,7 @@ Stop trying to bypass my whitelist system, I'll keep fighting until you give up 
 		return false
 	end
 end
-shared.feftywhitelist = WhitelistFunctions
+shared.vapewhitelist = WhitelistFunctions
 
 local RunLoops = {RenderStepTable = {}, StepTable = {}, HeartTable = {}}
 do
@@ -567,9 +567,9 @@ do
 end
 
 GuiLibrary.SelfDestructEvent.Event:Connect(function()
-	feftyInjected = false
+	vapeInjected = false
 	entityLibrary.selfDestruct()
-	for i, v in pairs(feftyConnections) do
+	for i, v in pairs(vapeConnections) do
 		if v.Disconnect then pcall(function() v:Disconnect() end) continue end
 		if v.disconnect then pcall(function() v:disconnect() end) continue end
 	end
@@ -580,7 +580,7 @@ runFunction(function()
 	radargameCamera.FieldOfView = 45
 	local Radar = GuiLibrary.CreateCustomWindow({
 		Name = "Radar", 
-		Icon = "fefty/assets/RadarIcon1.png",
+		Icon = "vape/assets/RadarIcon1.png",
 		IconSize = 16
 	})
 	local RadarColor = Radar.CreateColorSlider({
@@ -628,12 +628,12 @@ runFunction(function()
 	RadarMainFrame.Size = UDim2.new(0, 250, 0, 250)
 	RadarMainFrame.Parent = RadarFrame
 	local radartable = {}
-	table.insert(feftyConnections, Radar.GetCustomChildren().Parent:GetPropertyChangedSignal("Size"):Connect(function()
+	table.insert(vapeConnections, Radar.GetCustomChildren().Parent:GetPropertyChangedSignal("Size"):Connect(function()
 		RadarFrame.Position = UDim2.new(0, 0, 0, (Radar.GetCustomChildren().Parent.Size.Y.Offset == 0 and 45 or 0))
 	end))
 	GuiLibrary.ObjectsThatCanBeSaved.GUIWindow.Api.CreateCustomToggle({
 		Name = "Radar", 
-		Icon = "fefty/assets/RadarIcon2.png", 
+		Icon = "vape/assets/RadarIcon2.png", 
 		Function = function(callback)
 			Radar.SetVisible(callback) 
 			if callback then
@@ -971,7 +971,7 @@ runFunction(function()
 				SilentAimMethodUsed = "Normal"..synapsev3
 				task.spawn(function()
 					repeat
-						feftyTargetInfo.Targets.SilentAim = SlientAimShotTick >= tick() and SilentAimShot or nil
+						vapeTargetInfo.Targets.SilentAim = SlientAimShotTick >= tick() and SilentAimShot or nil
 						task.wait()
 					until not SilentAim.Enabled
 				end)
@@ -985,7 +985,7 @@ runFunction(function()
 					SilentAimHooked = false
 				end
 				if SilentAimCircle then SilentAimCircle.Visible = false end
-				feftyTargetInfo.Targets.SilentAim = nil
+				vapeTargetInfo.Targets.SilentAim = nil
 			end
 		end,
 		ExtraText = function() 
@@ -1822,7 +1822,7 @@ runFunction(function()
 					repeat
 						local attackedplayers = {}
 						KillauraNearTarget = false
-						feftyTargetInfo.Targets.Killaura = nil
+						vapeTargetInfo.Targets.Killaura = nil
 						if entityLibrary.isAlive and (not KillauraButtonDown.Enabled or inputService:IsMouseButtonPressed(0)) then
 							local plrs = AllNearPosition(KillauraRange.Value, 100, {Prediction = KillauraPrediction.Enabled})
 							if #plrs > 0 then
@@ -1835,7 +1835,7 @@ runFunction(function()
 										if KillauraTarget.Enabled then
 											table.insert(attackedplayers, v)
 										end
-										feftyTargetInfo.Targets.Killaura = v
+										vapeTargetInfo.Targets.Killaura = v
 										local playertype, playerattackable = WhitelistFunctions:CheckPlayerType(v.Player)
 										if not playerattackable then
 											continue
@@ -1882,7 +1882,7 @@ runFunction(function()
 			else
 				RunLoops:UnbindFromHeartbeat("Killaura") 
                 KillauraNearTarget = false
-				feftyTargetInfo.Targets.Killaura = nil
+				vapeTargetInfo.Targets.Killaura = nil
 				for i,v in pairs(KillauraBoxes) do v.Adornee = nil end
 				if KillauraRangeCirclePart then KillauraRangeCirclePart.Parent = nil end
 			end
@@ -2563,7 +2563,7 @@ runFunction(function()
         arrowObject.AnchorPoint = Vector2.new(0.5, 0.5)
         arrowObject.Position = UDim2.new(0.5, 0, 0.5, 0)
         arrowObject.Visible = false
-        arrowObject.Image = downloadfeftyAsset("fefty/assets/ArrowIndicator.png")
+        arrowObject.Image = downloadVapeAsset("vape/assets/ArrowIndicator.png")
 		arrowObject.ImageColor3 = getPlayerColor(plr.Player) or Color3.fromHSV(ArrowsColor.Hue, ArrowsColor.Sat, ArrowsColor.Value)
         arrowObject.Name = plr.Player.Name
         arrowObject.Parent = ArrowsFolder
@@ -4594,14 +4594,14 @@ runFunction(function()
 				table.insert(Cape.Connections, lplr.CharacterAdded:Connect(function(char)
 					task.spawn(function()
 						pcall(function() 
-							capeFunction(char, (successfulcustom and getcustomasset(CapeBox.Value) or downloadfeftyAsset("fefty/assets/feftyCape.png")))
+							capeFunction(char, (successfulcustom and getcustomasset(CapeBox.Value) or downloadVapeAsset("vape/assets/VapeCape.png")))
 						end)
 					end)
 				end))
 				if lplr.Character then
 					task.spawn(function()
 						pcall(function() 
-							capeFunction(lplr.Character, (successfulcustom and getcustomasset(CapeBox.Value) or downloadfeftyAsset("fefty/assets/feftyCape.png")))
+							capeFunction(lplr.Character, (successfulcustom and getcustomasset(CapeBox.Value) or downloadVapeAsset("vape/assets/VapeCape.png")))
 						end)
 					end)
 				end
@@ -4931,7 +4931,7 @@ runFunction(function()
 		adopted = "Bullying",
 		linlife = "Bullying",
 		commitnotalive = "Bullying",
-		fefty = "Offsite Links",
+		vape = "Offsite Links",
 		futureclient = "Offsite Links",
 		download = "Offsite Links",
 		youtube = "Offsite Links",
@@ -5149,8 +5149,8 @@ runFunction(function()
 					end
 					if AutoLeaveMode.Value == "UnInject" then 
 						task.spawn(function()
-							if not shared.feftyFullyLoaded then
-								repeat task.wait() until shared.feftyFullyLoaded
+							if not shared.VapeFullyLoaded then
+								repeat task.wait() until shared.VapeFullyLoaded
 							end
 							GuiLibrary.SelfDestruct()
 						end)

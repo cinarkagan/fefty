@@ -14,7 +14,7 @@ local function displayErrorPopup(text, func)
 	local prompt = ErrorPrompt.new("Default")
 	prompt._hideErrorCode = true
 	local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-	prompt:setErrorTitle("fefty")
+	prompt:setErrorTitle("Vape")
 	prompt:updateButtons({{
 		Text = "OK",
 		Callback = function() 
@@ -28,8 +28,8 @@ local function displayErrorPopup(text, func)
 	setidentity(oldidentity)
 end
 
-local function feftyGithubRequest(scripturl)
-	if not isfile("fefty/"..scripturl) then
+local function vapeGithubRequest(scripturl)
+	if not isfile("vape/"..scripturl) then
 		local suc, res
 		task.delay(15, function()
 			if not res and not errorPopupShown then 
@@ -37,18 +37,18 @@ local function feftyGithubRequest(scripturl)
 				displayErrorPopup("The connection to github is taking a while, Please be patient.")
 			end
 		end)
-		suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("fefty/commithash.txt").."/"..scripturl, true) end)
+		suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
 		if not suc or res == "404: Not Found" then
-			displayErrorPopup("Failed to connect to github : fefty/"..scripturl.." : "..res)
+			displayErrorPopup("Failed to connect to github : vape/"..scripturl.." : "..res)
 			error(res)
 		end
 		if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
-		writefile("fefty/"..scripturl, res)
+		writefile("vape/"..scripturl, res)
 	end
-	return readfile("fefty/"..scripturl)
+	return readfile("vape/"..scripturl)
 end
 
-if not shared.feftyDeveloper then 
+if not shared.VapeDeveloper then 
 	local commit = "main"
 	for i,v in pairs(game:HttpGet("https://github.com/cinarkagan/fefty"):split("\n")) do 
 		if v:find("commit") and v:find("fragment") then 
@@ -58,32 +58,32 @@ if not shared.feftyDeveloper then
 		end
 	end
 	if commit then
-		if isfolder("fefty") then 
-			if ((not isfile("fefty/commithash.txt")) or (readfile("fefty/commithash.txt") ~= commit or commit == "main")) then
-				for i,v in pairs({"fefty/Universal.lua", "fefty/MainScript.lua", "fefty/GuiLibrary.lua"}) do 
+		if isfolder("vape") then 
+			if ((not isfile("vape/commithash.txt")) or (readfile("vape/commithash.txt") ~= commit or commit == "main")) then
+				for i,v in pairs({"vape/Universal.lua", "vape/MainScript.lua", "vape/GuiLibrary.lua"}) do 
 					if isfile(v) and readfile(v):find("--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.") then
 						delfile(v)
 					end 
 				end
-				if isfolder("fefty/CustomModules") then 
-					for i,v in pairs(listfiles("fefty/CustomModules")) do 
+				if isfolder("vape/CustomModules") then 
+					for i,v in pairs(listfiles("vape/CustomModules")) do 
 						if isfile(v) and readfile(v):find("--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.") then
 							delfile(v)
 						end 
 					end
 				end
-				if isfolder("fefty/Libraries") then 
-					for i,v in pairs(listfiles("fefty/Libraries")) do 
+				if isfolder("vape/Libraries") then 
+					for i,v in pairs(listfiles("vape/Libraries")) do 
 						if isfile(v) and readfile(v):find("--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.") then
 							delfile(v)
 						end 
 					end
 				end
-				writefile("fefty/commithash.txt", commit)
+				writefile("vape/commithash.txt", commit)
 			end
 		else
-			makefolder("fefty")
-			writefile("fefty/commithash.txt", commit)
+			makefolder("vape")
+			writefile("vape/commithash.txt", commit)
 		end
 	else
 		displayErrorPopup("Failed to connect to github, please try using a VPN.")
@@ -91,4 +91,4 @@ if not shared.feftyDeveloper then
 	end
 end
 
-return loadstring(feftyGithubRequest("MainScript.lua"))()
+return loadstring(vapeGithubRequest("MainScript.lua"))()

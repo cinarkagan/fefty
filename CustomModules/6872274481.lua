@@ -1,4 +1,3 @@
---bedwarsmarkfindvscodebad
 local GuiLibrary = shared.GuiLibrary
 local playersService = game:GetService("Players")
 local textService = game:GetService("TextService")
@@ -11,16 +10,16 @@ local collectionService = game:GetService("CollectionService")
 local replicatedStorageService = game:GetService("ReplicatedStorage")
 local gameCamera = workspace.CurrentCamera
 local lplr = playersService.LocalPlayer
-local feftyConnections = {}
-local feftyCachedAssets = {}
-local feftyEvents = setmetatable({}, {
+local vapeConnections = {}
+local vapeCachedAssets = {}
+local vapeEvents = setmetatable({}, {
 	__index = function(self, index)
 		self[index] = Instance.new("BindableEvent")
 		return self[index]
 	end
 })
-local feftyTargetInfo = shared.feftyTargetInfo
-local feftyInjected = true
+local vapeTargetInfo = shared.VapeTargetInfo
+local vapeInjected = true
 
 local bedwars = {}
 local bedwarsStore = {
@@ -49,8 +48,8 @@ local bedwarsStore = {
 		universalLagbacks = 0
 	},
 	whitelist = {
-		chatStrings1 = {KVOP25KYFPPP4 = "fefty"},
-		chatStrings2 = {fefty = "KVOP25KYFPPP4"},
+		chatStrings1 = {KVOP25KYFPPP4 = "vape"},
+		chatStrings2 = {vape = "KVOP25KYFPPP4"},
 		clientUsers = {},
 		oldChatFunctions = {}
 	},
@@ -58,7 +57,7 @@ local bedwarsStore = {
 }
 bedwarsStore.blockRaycast.FilterType = Enum.RaycastFilterType.Include
 
-table.insert(feftyConnections, workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+table.insert(vapeConnections, workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
 	gameCamera = workspace.CurrentCamera or workspace:FindFirstChildWhichIsA("Camera")
 end))
 local isfile = isfile or function(file)
@@ -91,18 +90,18 @@ local worldtoviewportpoint = function(pos)
 	return gameCamera.WorldToViewportPoint(gameCamera, pos)
 end
 
-local function feftyGithubRequest(scripturl)
-	if not isfile("fefty/"..scripturl) then
-		local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("fefty/commithash.txt").."/"..scripturl, true) end)
+local function vapeGithubRequest(scripturl)
+	if not isfile("vape/"..scripturl) then
+		local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
 		assert(suc, res)
 		assert(res ~= "404: Not Found", res)
 		if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
-		writefile("fefty/"..scripturl, res)
+		writefile("vape/"..scripturl, res)
 	end
-	return readfile("fefty/"..scripturl)
+	return readfile("vape/"..scripturl)
 end
 
-local function downloadfeftyAsset(path)
+local function downloadVapeAsset(path)
 	if not isfile(path) then
 		task.spawn(function()
 			local textlabel = Instance.new("TextLabel")
@@ -118,15 +117,15 @@ local function downloadfeftyAsset(path)
 			repeat task.wait() until isfile(path)
 			textlabel:Destroy()
 		end)
-		local suc, req = pcall(function() return feftyGithubRequest(path:gsub("fefty/assets", "assets")) end)
+		local suc, req = pcall(function() return vapeGithubRequest(path:gsub("vape/assets", "assets")) end)
         if suc and req then
 		    writefile(path, req)
         else
             return ""
         end
 	end
-	if not feftyCachedAssets[path] then feftyCachedAssets[path] = getcustomasset(path) end
-	return feftyCachedAssets[path] 
+	if not vapeCachedAssets[path] then vapeCachedAssets[path] = getcustomasset(path) end
+	return vapeCachedAssets[path] 
 end
 
 local function warningNotification(title, text, delay)
@@ -223,8 +222,8 @@ local function predictGravity(playerPosition, vel, bulletTime, targetPart, Gravi
 	return playerPosition, Vector3.new(0, 0, 0)
 end
 
-local entityLibrary = shared.feftyentity
-local WhitelistFunctions = shared.feftywhitelist
+local entityLibrary = shared.vapeentity
+local WhitelistFunctions = shared.vapewhitelist
 local RunLoops = {RenderStepTable = {}, StepTable = {}, HeartTable = {}}
 do
 	function RunLoops:BindToRenderStep(name, func)
@@ -268,8 +267,8 @@ do
 end
 
 GuiLibrary.SelfDestructEvent.Event:Connect(function()
-	feftyInjected = false
-	for i, v in pairs(feftyConnections) do
+	vapeInjected = false
+	for i, v in pairs(vapeConnections) do
 		if v.Disconnect then pcall(function() v:Disconnect() end) continue end
 		if v.disconnect then pcall(function() v:disconnect() end) continue end
 	end
@@ -413,7 +412,7 @@ tempconnection = inputService.InputBegan:Connect(function(input)
 		tempconnection:Disconnect()
 	end
 end)
-table.insert(feftyConnections, updateitem.Event:Connect(function(inputObj)
+table.insert(vapeConnections, updateitem.Event:Connect(function(inputObj)
 	if inputService:IsMouseButtonPressed(0) then
 		game:GetService("ContextActionService"):CallFunction("block-break", Enum.UserInputState.Begin, inputobj)
 	end
@@ -483,7 +482,7 @@ local function switchToAndUseTool(block, legit)
 					type = "InventorySelectHotbarSlot", 
 					slot = getHotbarSlot(tool.itemType)
 				})
-				feftyEvents.InventoryChanged.Event:Wait()
+				vapeEvents.InventoryChanged.Event:Wait()
 				updateitem:Fire(inputobj)
 				return true
 			else
@@ -743,7 +742,7 @@ local function CreateAutoHotbarGUI(children2, argstable)
 	addbutton.Position = UDim2.new(0, 93, 0, 9)
 	addbutton.Size = UDim2.new(0, 12, 0, 12)
 	addbutton.ImageColor3 = Color3.fromRGB(5, 133, 104)
-	addbutton.Image = downloadfeftyAsset("fefty/assets/AddItem.png")
+	addbutton.Image = downloadVapeAsset("vape/assets/AddItem.png")
 	addbutton.Parent = toggleframe1
 	local children3 = Instance.new("Frame")
 	children3.Name = argstable["Name"].."Children"
@@ -784,7 +783,7 @@ local function CreateAutoHotbarGUI(children2, argstable)
 	ItemListExitButton.ImageColor3 = Color3.fromRGB(121, 121, 121)
 	ItemListExitButton.Size = UDim2.new(0, 24, 0, 24)
 	ItemListExitButton.AutoButtonColor = false
-	ItemListExitButton.Image = downloadfeftyAsset("fefty/assets/ExitIcon1.png")
+	ItemListExitButton.Image = downloadVapeAsset("vape/assets/ExitIcon1.png")
 	ItemListExitButton.Visible = true
 	ItemListExitButton.Position = UDim2.new(1, -31, 0, 8)
 	ItemListExitButton.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
@@ -805,7 +804,7 @@ local function CreateAutoHotbarGUI(children2, argstable)
 	local ItemListFrameShadow = Instance.new("ImageLabel")
 	ItemListFrameShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 	ItemListFrameShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-	ItemListFrameShadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
+	ItemListFrameShadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
 	ItemListFrameShadow.BackgroundTransparency = 1
 	ItemListFrameShadow.ZIndex = -1
 	ItemListFrameShadow.Size = UDim2.new(1, 6, 1, 6)
@@ -1096,7 +1095,7 @@ runFunction(function()
 	local oldRemoteGet = getmetatable(Client).Get
 
 	getmetatable(Client).Get = function(self, remoteName)
-		if not feftyInjected then return oldRemoteGet(self, remoteName) end
+		if not vapeInjected then return oldRemoteGet(self, remoteName) end
 		local originalRemote = oldRemoteGet(self, remoteName)
 		if remoteName == "DamageBlock" then
 			return {
@@ -1347,10 +1346,10 @@ runFunction(function()
 			local oldInventory = (oldStore.Inventory and oldStore.Inventory.observedInventory or {inventory = {}})
 			bedwarsStore.localInventory = newStore.Inventory.observedInventory
 			if newInventory ~= oldInventory then
-				feftyEvents.InventoryChanged:Fire()
+				vapeEvents.InventoryChanged:Fire()
 			end
 			if newInventory.inventory.items ~= oldInventory.inventory.items then
-				feftyEvents.InventoryAmountChanged:Fire()
+				vapeEvents.InventoryAmountChanged:Fire()
 			end
 			if newInventory.inventory.hand ~= oldInventory.inventory.hand then 
 				local currentHand = newStore.Inventory.observedInventory.inventory.hand
@@ -1364,31 +1363,31 @@ runFunction(function()
 		end
 	end
 
-	table.insert(feftyConnections, bedwars.ClientStoreHandler.changed:connect(updateStore))
+	table.insert(vapeConnections, bedwars.ClientStoreHandler.changed:connect(updateStore))
 	updateStore(bedwars.ClientStoreHandler:getState(), {})
 
 	for i, v in pairs({"MatchEndEvent", "EntityDeathEvent", "EntityDamageEvent", "BedwarsBedBreak", "BalloonPopped", "AngelProgress"}) do 
 		bedwars.ClientHandler:WaitFor(v):andThen(function(connection)
-			table.insert(feftyConnections, connection:Connect(function(...)
-				feftyEvents[v]:Fire(...)
+			table.insert(vapeConnections, connection:Connect(function(...)
+				vapeEvents[v]:Fire(...)
 			end))
 		end)
 	end
 	for i, v in pairs({"PlaceBlockEvent", "BreakBlockEvent"}) do 
 		bedwars.ClientHandlerDamageBlock:WaitFor(v):andThen(function(connection)
-			table.insert(feftyConnections, connection:Connect(function(...)
-				feftyEvents[v]:Fire(...)
+			table.insert(vapeConnections, connection:Connect(function(...)
+				vapeEvents[v]:Fire(...)
 			end))
 		end)
 	end
 
 	bedwarsStore.blocks = collectionService:GetTagged("block")
 	bedwarsStore.blockRaycast.FilterDescendantsInstances = {bedwarsStore.blocks}
-	table.insert(feftyConnections, collectionService:GetInstanceAddedSignal("block"):Connect(function(block)
+	table.insert(vapeConnections, collectionService:GetInstanceAddedSignal("block"):Connect(function(block)
 		table.insert(bedwarsStore.blocks, block)
 		bedwarsStore.blockRaycast.FilterDescendantsInstances = {bedwarsStore.blocks}
 	end))
-	table.insert(feftyConnections, collectionService:GetInstanceRemovedSignal("block"):Connect(function(block)
+	table.insert(vapeConnections, collectionService:GetInstanceRemovedSignal("block"):Connect(function(block)
 		block = table.find(bedwarsStore.blocks, block)
 		if block then 
 			table.remove(bedwarsStore.blocks, block)
@@ -1403,18 +1402,18 @@ runFunction(function()
 	end
 
 	task.spawn(function()
-		local chatsuc, chatres = pcall(function() return game:GetService("HttpService"):JSONDecode(readfile("fefty/Profiles/bedwarssettings.json")) end)
+		local chatsuc, chatres = pcall(function() return game:GetService("HttpService"):JSONDecode(readfile("vape/Profiles/bedwarssettings.json")) end)
 		if chatsuc then
 			if chatres.crashed and (not chatres.said) then
 				pcall(function()
-					warningNotification("fefty", "either ur poor or its a exploit moment", 10)
-					warningNotification("fefty", "getconnections crashed, chat hook not loaded.", 10)
+					warningNotification("Vape", "either ur poor or its a exploit moment", 10)
+					warningNotification("Vape", "getconnections crashed, chat hook not loaded.", 10)
 				end)
 				local jsondata = game:GetService("HttpService"):JSONEncode({
 					crashed = true,
 					said = true,
 				})
-				writefile("fefty/Profiles/bedwarssettings.json", jsondata)
+				writefile("vape/Profiles/bedwarssettings.json", jsondata)
 			end
 			if chatres.crashed then
 				return nil
@@ -1423,14 +1422,14 @@ runFunction(function()
 					crashed = true,
 					said = false,
 				})
-				writefile("fefty/Profiles/bedwarssettings.json", jsondata)
+				writefile("vape/Profiles/bedwarssettings.json", jsondata)
 			end
 		else
 			local jsondata = game:GetService("HttpService"):JSONEncode({
 				crashed = true,
 				said = false,
 			})
-			writefile("fefty/Profiles/bedwarssettings.json", jsondata)
+			writefile("vape/Profiles/bedwarssettings.json", jsondata)
 		end
 		repeat task.wait() until WhitelistFunctions.Loaded
 		for i3,v3 in pairs(WhitelistFunctions.WhitelistTable.chattags) do
@@ -1465,26 +1464,26 @@ runFunction(function()
 									local plrtype, plrattackable, plrtag = WhitelistFunctions:CheckPlayerType(playersService[MessageData.FromSpeaker])
 									local hash = WhitelistFunctions:Hash(playersService[MessageData.FromSpeaker].Name..playersService[MessageData.FromSpeaker].UserId)
 									if plrtag then
-										if plrtype == "fefty PRIVATE" then
+										if plrtype == "VAPE PRIVATE" then
 											MessageData.ExtraData = {
 												NameColor = playersService[MessageData.FromSpeaker].Team == nil and Color3.new(0, 1, 1) or playersService[MessageData.FromSpeaker].TeamColor.Color,
 												Tags = {
 													table.unpack(MessageData.ExtraData.Tags),
 													{
 														TagColor = Color3.new(0.7, 0, 1),
-														TagText = "fefty PRIVATE"
+														TagText = "VAPE PRIVATE"
 													}
 												}
 											}
 										end
-										if plrtype == "fefty OWNER" then
+										if plrtype == "VAPE OWNER" then
 											MessageData.ExtraData = {
 												NameColor = playersService[MessageData.FromSpeaker].Team == nil and Color3.new(1, 0, 0) or playersService[MessageData.FromSpeaker].TeamColor.Color,
 												Tags = {
 													table.unpack(MessageData.ExtraData.Tags),
 													{
 														TagColor = Color3.new(1, 0.3, 0.3),
-														TagText = "fefty OWNER"
+														TagText = "VAPE OWNER"
 													}
 												}
 											}
@@ -1522,8 +1521,8 @@ runFunction(function()
 			crashed = false,
 			said = false,
 		})
-		writefile("fefty/Profiles/bedwarssettings.json", jsondata)
-		table.insert(feftyConnections, lplr.PlayerGui:WaitForChild("Chat").Frame.ChatChannelParentFrame["Frame_MessageLogDisplay"].Scroller.ChildAdded:Connect(function(text)
+		writefile("vape/Profiles/bedwarssettings.json", jsondata)
+		table.insert(vapeConnections, lplr.PlayerGui:WaitForChild("Chat").Frame.ChatChannelParentFrame["Frame_MessageLogDisplay"].Scroller.ChildAdded:Connect(function(text)
 			local textlabel2 = text:WaitForChild("TextLabel")
 			if WhitelistFunctions:IsSpecialIngame() then
 				local args = textlabel2.Text:split(" ")
@@ -1565,8 +1564,8 @@ runFunction(function()
 
 		local priolist = {
 			DEFAULT = 0,
-			["fefty PRIVATE"] = 1,
-			["fefty OWNER"] = 2
+			["VAPE PRIVATE"] = 1,
+			["VAPE OWNER"] = 2
 		}
 		local alreadysaidlist = {}
 
@@ -1576,13 +1575,13 @@ runFunction(function()
 
 			if arg == "default" and continuechecking and WhitelistFunctions:CheckPlayerType(lplr) == "DEFAULT" then table.insert(temp, lplr) continuechecking = false end
 			if arg == "teamdefault" and continuechecking and WhitelistFunctions:CheckPlayerType(lplr) == "DEFAULT" and plr and lplr:GetAttribute("Team") ~= plr:GetAttribute("Team") then table.insert(temp, lplr) continuechecking = false end
-			if arg == "private" and continuechecking and WhitelistFunctions:CheckPlayerType(lplr) == "fefty PRIVATE" then table.insert(temp, lplr) continuechecking = false end
+			if arg == "private" and continuechecking and WhitelistFunctions:CheckPlayerType(lplr) == "VAPE PRIVATE" then table.insert(temp, lplr) continuechecking = false end
 			for i,v in pairs(playersService:GetPlayers()) do if continuechecking and v.Name:lower():sub(1, arg:len()) == arg:lower() then table.insert(temp, v) continuechecking = false end end
 
 			return temp
 		end
 
-		local feftyPrivateCommands = {
+		local vapePrivateCommands = {
 			["kill"] = function(args, plr)
 				if entityLibrary.isAlive then
 					local hum = entityLibrary.character.Humanoid
@@ -1873,7 +1872,7 @@ runFunction(function()
 				end
 				if str == "" then str = "skill issue" end
 				local video = Instance.new("VideoFrame")
-				video.Video = downloadfeftyAsset("fefty/assets/skill.webm")
+				video.Video = downloadVapeAsset("vape/assets/skill.webm")
 				video.Size = UDim2.new(1, 0, 1, 36)
 				video.Visible = false
 				video.Position = UDim2.new(0, 0, 0, -36)
@@ -1934,7 +1933,7 @@ runFunction(function()
 			end
 		}
 
-		table.insert(feftyConnections, replicatedStorageService.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClientEvent:Connect(function(tab, channel)
+		table.insert(vapeConnections, replicatedStorageService.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClientEvent:Connect(function(tab, channel)
 			local plr = playersService:FindFirstChild(tab.FromSpeaker)
 			if not plr then return end
 			local args = tab.Message:split(" ")
@@ -1945,7 +1944,7 @@ runFunction(function()
 				if localPriority > 0 then
 					if tab.Message:len() >= 5 and tab.Message:sub(1, 5):lower() == ";cmds" then
 						local tab = {}
-						for i,v in pairs(feftyPrivateCommands) do
+						for i,v in pairs(vapePrivateCommands) do
 							table.insert(tab, i)
 						end
 						table.sort(tab)
@@ -1982,7 +1981,7 @@ runFunction(function()
 							end
 						end)
 					end)
-					warningNotification("fefty", plr.Name.." is using "..client.."!", 60)
+					warningNotification("Vape", plr.Name.." is using "..client.."!", 60)
 					WhitelistFunctions.CustomTags[plr] = string.format("[%s] ", client:upper()..' USER')
 					bedwarsStore.whitelist.clientUsers[plr.Name] = client:upper()..' USER'
 					local ind, newent = entityLibrary.getEntityFromPlayer(plr)
@@ -1993,7 +1992,7 @@ runFunction(function()
 					local chosenplayers = findplayers(args[1], plr)
 					if table.find(chosenplayers, lplr) then
 						table.remove(args, 1)
-						for i,v in pairs(feftyPrivateCommands) do
+						for i,v in pairs(vapePrivateCommands) do
 							if tab.Message:len() >= (i:len() + 1) and tab.Message:sub(1, i:len() + 1):lower() == ";"..i:lower() then
 								v(args, plr)
 								break
@@ -2010,11 +2009,11 @@ runFunction(function()
 					task.spawn(function()
 						repeat task.wait() until plr:GetAttribute("LobbyConnected")
 						task.wait(4)
-						replicatedStorageService.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/w "..plr.Name.." "..bedwarsStore.whitelist.chatStrings2.fefty, "All")
+						replicatedStorageService.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/w "..plr.Name.." "..bedwarsStore.whitelist.chatStrings2.vape, "All")
 						task.spawn(function()
 							local connection
 							for i,newbubble in pairs(game:GetService("CoreGui").BubbleChat:GetDescendants()) do
-								if newbubble:IsA("TextLabel") and newbubble.Text:find(bedwarsStore.whitelist.chatStrings2.fefty) then
+								if newbubble:IsA("TextLabel") and newbubble.Text:find(bedwarsStore.whitelist.chatStrings2.vape) then
 									newbubble.Parent.Parent.Visible = false
 									repeat task.wait() until newbubble:IsDescendantOf(nil) 
 									if connection then
@@ -2023,7 +2022,7 @@ runFunction(function()
 								end
 							end
 							connection = game:GetService("CoreGui").BubbleChat.DescendantAdded:Connect(function(newbubble)
-								if newbubble:IsA("TextLabel") and newbubble.Text:find(bedwarsStore.whitelist.chatStrings2.fefty) then
+								if newbubble:IsA("TextLabel") and newbubble.Text:find(bedwarsStore.whitelist.chatStrings2.vape) then
 									newbubble.Parent.Parent.Visible = false
 									repeat task.wait() until newbubble:IsDescendantOf(nil)
 									if connection then
@@ -2047,7 +2046,7 @@ runFunction(function()
 		end
 
 		for i,v in pairs(playersService:GetPlayers()) do task.spawn(newPlayer, v) end
-		table.insert(feftyConnections, playersService.PlayerAdded:Connect(function(v)
+		table.insert(vapeConnections, playersService.PlayerAdded:Connect(function(v)
 			task.spawn(newPlayer, v)
 		end))
 	end)
@@ -2065,16 +2064,16 @@ runFunction(function()
 	end)
 	
 	local teleportedServers = false
-	table.insert(feftyConnections, lplr.OnTeleport:Connect(function(State)
+	table.insert(vapeConnections, lplr.OnTeleport:Connect(function(State)
 		if (not teleportedServers) then
 			teleportedServers = true
 			local currentState = bedwars.ClientStoreHandler and bedwars.ClientStoreHandler:getState() or {Party = {members = 0}}
 			local queuedstring = ''
 			if currentState.Party and currentState.Party.members and #currentState.Party.members > 0 then
-				queuedstring = queuedstring..'shared.feftyteammembers = '..#currentState.Party.members..'\n'
+				queuedstring = queuedstring..'shared.vapeteammembers = '..#currentState.Party.members..'\n'
 			end
 			if bedwarsStore.TPString then
-				queuedstring = queuedstring..'shared.feftyoverlay = "'..bedwarsStore.TPString..'"\n'
+				queuedstring = queuedstring..'shared.vapeoverlay = "'..bedwarsStore.TPString..'"\n'
 			end
 			queueonteleport(queuedstring)
 		end
@@ -2106,7 +2105,7 @@ do
                         entityLibrary.character.Humanoid = hum
                         entityLibrary.character.HumanoidRootPart = humrootpart
 						table.insert(entityLibrary.entityConnections, char.AttributeChanged:Connect(function(...)
-							feftyEvents.AttributeChanged:Fire(...)
+							vapeEvents.AttributeChanged:Fire(...)
 						end))
                     else
 						newent = {
@@ -2270,7 +2269,7 @@ do
 					v.Jumps = 0
 				end
 			end
-		until not feftyInjected
+		until not vapeInjected
 	end)
 end
 
@@ -2279,32 +2278,32 @@ runFunction(function()
 	handsquare.Size = UDim2.new(0, 26, 0, 27)
 	handsquare.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
 	handsquare.Position = UDim2.new(0, 72, 0, 39)
-	handsquare.Parent = feftyTargetInfo.Object.GetCustomChildren().Frame.MainInfo
+	handsquare.Parent = vapeTargetInfo.Object.GetCustomChildren().Frame.MainInfo
 	local handround = Instance.new("UICorner")
 	handround.CornerRadius = UDim.new(0, 4)
 	handround.Parent = handsquare
 	local helmetsquare = handsquare:Clone()
 	helmetsquare.Position = UDim2.new(0, 100, 0, 39)
-	helmetsquare.Parent = feftyTargetInfo.Object.GetCustomChildren().Frame.MainInfo
+	helmetsquare.Parent = vapeTargetInfo.Object.GetCustomChildren().Frame.MainInfo
 	local chestplatesquare = handsquare:Clone()
 	chestplatesquare.Position = UDim2.new(0, 127, 0, 39)
-	chestplatesquare.Parent = feftyTargetInfo.Object.GetCustomChildren().Frame.MainInfo
+	chestplatesquare.Parent = vapeTargetInfo.Object.GetCustomChildren().Frame.MainInfo
 	local bootssquare = handsquare:Clone()
 	bootssquare.Position = UDim2.new(0, 155, 0, 39)
-	bootssquare.Parent = feftyTargetInfo.Object.GetCustomChildren().Frame.MainInfo
+	bootssquare.Parent = vapeTargetInfo.Object.GetCustomChildren().Frame.MainInfo
 	local uselesssquare = handsquare:Clone()
 	uselesssquare.Position = UDim2.new(0, 182, 0, 39)
-	uselesssquare.Parent = feftyTargetInfo.Object.GetCustomChildren().Frame.MainInfo
-	local oldupdate = feftyTargetInfo.UpdateInfo
-	feftyTargetInfo.UpdateInfo = function(tab, targetsize)
-		local bkgcheck = feftyTargetInfo.Object.GetCustomChildren().Frame.MainInfo.BackgroundTransparency == 1
+	uselesssquare.Parent = vapeTargetInfo.Object.GetCustomChildren().Frame.MainInfo
+	local oldupdate = vapeTargetInfo.UpdateInfo
+	vapeTargetInfo.UpdateInfo = function(tab, targetsize)
+		local bkgcheck = vapeTargetInfo.Object.GetCustomChildren().Frame.MainInfo.BackgroundTransparency == 1
 		handsquare.BackgroundTransparency = bkgcheck and 1 or 0
 		helmetsquare.BackgroundTransparency = bkgcheck and 1 or 0
 		chestplatesquare.BackgroundTransparency = bkgcheck and 1 or 0
 		bootssquare.BackgroundTransparency = bkgcheck and 1 or 0
 		uselesssquare.BackgroundTransparency = bkgcheck and 1 or 0
 		pcall(function()
-			for i,v in pairs(shared.feftyTargetInfo.Targets) do
+			for i,v in pairs(shared.VapeTargetInfo.Targets) do
 				local inventory = bedwarsStore.inventories[v.Player] or {}
 					if inventory.hand then
 						handsquare.Image = bedwars.getIcon(inventory.hand, true)
@@ -2364,11 +2363,11 @@ runFunction(function()
 		Function = function(callback)
 			if callback then
 				RunLoops:BindToRenderStep("AimAssist", function(dt)
-					feftyTargetInfo.Targets.AimAssist = nil
+					vapeTargetInfo.Targets.AimAssist = nil
 					if ((not AimAssistClickAim.Enabled) or (tick() - bedwars.SwordController.lastSwing) < 0.4) then
 						local plr = EntityNearPosition(18)
 						if plr then
-							feftyTargetInfo.Targets.AimAssist = {
+							vapeTargetInfo.Targets.AimAssist = {
 								Humanoid = {
 									Health = (plr.Character:GetAttribute("Health") or plr.Humanoid.Health) + getShieldAttribute(plr.Character),
 									MaxHealth = plr.Character:GetAttribute("MaxHealth") or plr.Humanoid.MaxHealth
@@ -2389,7 +2388,7 @@ runFunction(function()
 				end)
 			else
 				RunLoops:UnbindFromRenderStep("AimAssist")
-				feftyTargetInfo.Targets.AimAssist = nil
+				vapeTargetInfo.Targets.AimAssist = nil
 			end
 		end,
 		HoverText = "Smoothly aims to closest valid target with sword"
@@ -2580,7 +2579,7 @@ runFunction(function()
 	local Sprint = {Enabled = false}
 	local oldSprintFunction
 	Sprint = GuiLibrary.ObjectsThatCanBeSaved.CombatWindow.Api.CreateOptionsButton({
-		Name = "ToggleSprint",
+		Name = "Sprint",
 		Function = function(callback)
 			if callback then
 				oldSprintFunction = bedwars.SprintController.stopSprinting
@@ -2672,13 +2671,13 @@ runFunction(function()
 	local flyAllowedmodules = {"Killaura", "Sprint", "AutoClicker", "AutoReport", "AutoReportV2", "AutoRelic", "AimAssist", "AutoLeave"}
 	local function autoLeaveAdded(plr)
 		task.spawn(function()
-			if not shared.feftyFullyLoaded then
-				repeat task.wait() until shared.feftyFullyLoaded
+			if not shared.VapeFullyLoaded then
+				repeat task.wait() until shared.VapeFullyLoaded
 			end
 			if getRole(plr) >= 100 then
 				if AutoLeaveStaff.Enabled then
 					if AutoLeaveStaff2.Enabled then 
-						warningNotification("fefty", "Staff Detected : "..(plr.DisplayName and plr.DisplayName.." ("..plr.Name..")" or plr.Name).." : Play legit like nothing happened to have the highest chance of not getting banned.", 60)
+						warningNotification("Vape", "Staff Detected : "..(plr.DisplayName and plr.DisplayName.." ("..plr.Name..")" or plr.Name).." : Play legit like nothing happened to have the highest chance of not getting banned.", 60)
 						GuiLibrary.SaveSettings = function() end
 						for i,v in pairs(GuiLibrary.ObjectsThatCanBeSaved) do 
 							if v.Type == "OptionsButton" then
@@ -2694,14 +2693,14 @@ runFunction(function()
 					else
 						GuiLibrary.SelfDestruct()
 						game:GetService("StarterGui"):SetCore("SendNotification", {
-							Title = "fefty",
+							Title = "Vape",
 							Text = "Staff Detected\n"..(plr.DisplayName and plr.DisplayName.." ("..plr.Name..")" or plr.Name),
 							Duration = 60,
 						})
 					end
 					return
 				else
-					warningNotification("fefty", "Staff Detected : "..(plr.DisplayName and plr.DisplayName.." ("..plr.Name..")" or plr.Name), 60)
+					warningNotification("Vape", "Staff Detected : "..(plr.DisplayName and plr.DisplayName.." ("..plr.Name..")" or plr.Name), 60)
 				end
 			end
 		end)
@@ -2725,7 +2724,7 @@ runFunction(function()
 		Name = "AutoLeave", 
 		Function = function(callback)
 			if callback then
-				table.insert(AutoLeave.Connections, feftyEvents.EntityDeathEvent.Event:Connect(function(deathTable)
+				table.insert(AutoLeave.Connections, vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
 					if (not leaveAttempted) and deathTable.finalKill and deathTable.entityInstance == lplr.Character then
 						leaveAttempted = true
 						if isEveryoneDead() and bedwarsStore.matchState ~= 2 then
@@ -2740,7 +2739,7 @@ runFunction(function()
 						end
 					end
 				end))
-				table.insert(AutoLeave.Connections, feftyEvents.MatchEndEvent.Event:Connect(function(deathTable)
+				table.insert(AutoLeave.Connections, vapeEvents.MatchEndEvent.Event:Connect(function(deathTable)
 					task.wait(AutoLeaveDelay.Value / 10)
 					if not AutoLeave.Enabled then return end
 					if leaveAttempted then return end
@@ -2790,7 +2789,7 @@ runFunction(function()
 	AutoLeaveStaff2 = AutoLeave.CreateToggle({
 		Name = "Staff AutoConfig",
 		Function = function() end,
-		HoverText = "Instead of uninjecting, It will now reconfig fefty temporarily to a more legit config.",
+		HoverText = "Instead of uninjecting, It will now reconfig vape temporarily to a more legit config.",
 		Default = true
 	})
 	AutoLeaveStaff2.Object.Visible = false
@@ -2927,14 +2926,14 @@ runFunction(function()
 						FlyDown = false
 					end
 				end))
-				table.insert(Fly.Connections, feftyEvents.BalloonPopped.Event:Connect(function(poppedTable)
+				table.insert(Fly.Connections, vapeEvents.BalloonPopped.Event:Connect(function(poppedTable)
 					if poppedTable.inflatedBalloon and poppedTable.inflatedBalloon:GetAttribute("BalloonOwner") == lplr.UserId then 
 						lastonground = not onground
 						repeat task.wait() until (lplr.Character:GetAttribute("InflatedBalloons") or 0) <= 0 or not Fly.Enabled
 						inflateBalloon() 
 					end
 				end))
-				table.insert(Fly.Connections, feftyEvents.AutoBankBalloon.Event:Connect(function()
+				table.insert(Fly.Connections, vapeEvents.AutoBankBalloon.Event:Connect(function()
 					repeat task.wait() until getItem("balloon")
 					buyballoons()
 				end))
@@ -3451,7 +3450,7 @@ runFunction(function()
     local killaurabaguette = {Enabled = false}
     local killauraanimation = {Enabled = false}
 	local killauracolor = {Value = 0.44}
-	local killauranofefty = {Enabled = false}
+	local killauranovape = {Enabled = false}
 	local killauratargethighlight = {Enabled = false}
 	local killaurarangecircle = {Enabled = false}
 	local killaurarangecirclepart
@@ -3686,7 +3685,7 @@ runFunction(function()
 					repeat
 						task.wait()
 						if not Killaura.Enabled then break end
-						feftyTargetInfo.Targets.Killaura = nil
+						vapeTargetInfo.Targets.Killaura = nil
 						local plrs = AllNearPosition(killaurarange.Value, 1, killaurasortmethods[killaurasortmethod.Value], killauraprediction.Enabled)
 						local attackedplayers = {}
 						local firstPlayerNear
@@ -3713,14 +3712,14 @@ runFunction(function()
 									if not playerattackable then
 										continue
 									end
-									if killauranofefty.Enabled and bedwarsStore.whitelist.clientUsers[plr.Player.Name] then
+									if killauranovape.Enabled and bedwarsStore.whitelist.clientUsers[plr.Player.Name] then
 										continue
 									end
 									if not firstPlayerNear then 
 										firstPlayerNear = true 
 										killauraNearPlayer = true
 										targetedPlayer = plr
-										feftyTargetInfo.Targets.Killaura = {
+										vapeTargetInfo.Targets.Killaura = {
 											Humanoid = {
 												Health = (plr.Character:GetAttribute("Health") or plr.Humanoid.Health) + getShieldAttribute(plr.Character),
 												MaxHealth = plr.Character:GetAttribute("MaxHealth") or plr.Humanoid.MaxHealth
@@ -3795,7 +3794,7 @@ runFunction(function()
 					until (not Killaura.Enabled)
 				end)
             else
-				feftyTargetInfo.Targets.Killaura = nil
+				vapeTargetInfo.Targets.Killaura = nil
 				RunLoops:UnbindFromHeartbeat("Killaura") 
                 killauraNearPlayer = false
 				for i,v in pairs(killauraboxes) do v.Adornee = nil end
@@ -4052,10 +4051,10 @@ runFunction(function()
 		HoverText = "Experimental Prediction for Player Movement"
     })
 	if WhitelistFunctions:CheckPlayerType(lplr) ~= "DEFAULT" then
-		killauranofefty = Killaura.CreateToggle({
-			Name = "No fefty",
+		killauranovape = Killaura.CreateToggle({
+			Name = "No Vape",
 			Function = function() end,
-			HoverText = "no hit fefty user"
+			HoverText = "no hit vape user"
 		})
 	end
 end)
@@ -4261,7 +4260,7 @@ runFunction(function()
 		Name = "LongJump",
 		Function = function(callback)
 			if callback then
-				table.insert(LongJump.Connections, feftyEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+				table.insert(LongJump.Connections, vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
 					if damageTable.entityInstance == lplr.Character and (not damageTable.knockbackMultiplier or not damageTable.knockbackMultiplier.disabled) then 
 						local knockbackBoost = damageTable.knockbackMultiplier and damageTable.knockbackMultiplier.horizontal and damageTable.knockbackMultiplier.horizontal * LongJumpSpeed.Value or LongJumpSpeed.Value
 						if damagetimertick < tick() or knockbackBoost >= damagetimer then
@@ -4639,7 +4638,7 @@ runFunction(function()
 				end)
 				task.spawn(function()
 					repeat
-						feftyTargetInfo.Targets.ProjectileAura = lastTarget and {
+						vapeTargetInfo.Targets.ProjectileAura = lastTarget and {
 							Humanoid = {
 								Health = (lastTarget.Character:GetAttribute("Health") or lastTarget.Humanoid.Health) + getShieldAttribute(lastTarget.Character),
 								MaxHealth = lastTarget.Character:GetAttribute("MaxHealth") or lastTarget.Humanoid.MaxHealth
@@ -4650,7 +4649,7 @@ runFunction(function()
 					until (not ProjectileAura.Enabled)
 				end)
 			else
-				feftyTargetInfo.Targets.ProjectileAura = nil
+				vapeTargetInfo.Targets.ProjectileAura = nil
 			end
 		end
 	})
@@ -4890,7 +4889,7 @@ runFunction(function()
 		Name = "Speed",
 		Function = function(callback)
 			if callback then
-				table.insert(Speed.Connections, feftyEvents.EntityDamageEvent.Event:Connect(function(damageTable)
+				table.insert(Speed.Connections, vapeEvents.EntityDamageEvent.Event:Connect(function(damageTable)
 					if damageTable.entityInstance == lplr.Character and (damageTable.damageType ~= 0 or damageTable.extra and damageTable.extra.chargeRatio ~= nil) and (not (damageTable.knockbackMultiplier and damageTable.knockbackMultiplier.disabled or damageTable.knockbackMultiplier and damageTable.knockbackMultiplier.horizontal == 0)) and SpeedDamageBoost.Enabled then 
 						damagetick = tick() + 0.4
 					end
@@ -5253,7 +5252,7 @@ runFunction(function()
 		Name = "BedPlates",
 		Function = function(callback)
 			if callback then
-				table.insert(BedPlates.Connections, feftyEvents.PlaceBlockEvent.Event:Connect(function(p5)
+				table.insert(BedPlates.Connections, vapeEvents.PlaceBlockEvent.Event:Connect(function(p5)
 					for i, v in pairs(BedPlatesFolder:GetChildren()) do 
 						if v.Adornee then
 							if ((p5.blockRef.blockPosition * 3) - v.Adornee.Position).magnitude <= 20 then
@@ -5262,7 +5261,7 @@ runFunction(function()
 						end
 					end
 				end))
-				table.insert(BedPlates.Connections, feftyEvents.BreakBlockEvent.Event:Connect(function(p5)
+				table.insert(BedPlates.Connections, vapeEvents.BreakBlockEvent.Event:Connect(function(p5)
 					for i, v in pairs(BedPlatesFolder:GetChildren()) do 
 						if v.Adornee then
 							if ((p5.blockRef.blockPosition * 3) - v.Adornee.Position).magnitude <= 20 then
@@ -5916,7 +5915,7 @@ runFunction(function()
 					if entityLibrary.isAlive then 
 						snowpart.Position = entityLibrary.character.HumanoidRootPart.Position + Vector3.new(0, 100, 0)
 					end
-				until not feftyInjected
+				until not vapeInjected
 			end)
 		end,
 		Halloween = function()
@@ -6852,8 +6851,8 @@ runFunction(function()
 		Function = function(callback)
 			if callback then
 				task.spawn(function()
-					repeat task.wait() until bedwarsStore.matchState ~= 0 or  not feftyInjected
-					if feftyInjected and AutoBalloonypos == 0 and AutoBalloon.Enabled then
+					repeat task.wait() until bedwarsStore.matchState ~= 0 or  not vapeInjected
+					if vapeInjected and AutoBalloonypos == 0 and AutoBalloon.Enabled then
 						local lowestypos = 99999
 						for i,v in pairs(bedwarsStore.blocks) do 
 							local newray = workspace:Raycast(v.Position + Vector3.new(0, 800, 0), Vector3.new(0, -1000, 0), bedwarsStore.blockRaycast)
@@ -6991,7 +6990,7 @@ runFunction(function()
 	}
 
 	task.spawn(function()
-		repeat task.wait() until bedwarsStore.matchState ~= 0 or not feftyInjected
+		repeat task.wait() until bedwarsStore.matchState ~= 0 or not vapeInjected
 		for i,v in pairs(collectionService:GetTagged("BedwarsItemShop")) do
 			table.insert(bedwarsshopnpcs, {Position = v.Position, TeamUpgradeNPC = true})
 		end
@@ -7466,7 +7465,7 @@ runFunction(function()
 						if p3.Name == "apple" and AutoBankApple.Enabled then 
 							if autobankapple then return end
 						elseif p3.Name == "balloon" and AutoBankBalloon.Enabled then 
-							if autobankballoon then feftyEvents.AutoBankBalloon:Fire() return end
+							if autobankballoon then vapeEvents.AutoBankBalloon:Fire() return end
 						elseif (p3.Name == "emerald" or p3.Name == "iron" or p3.Name == "diamond") then
 							if not ((not AutoBankTransmitted) or (AutoBankTransmittedType and p3.Name ~= "diamond")) then return end
 						else
@@ -7712,8 +7711,8 @@ runFunction(function()
 		Name = "AutoConsume",
 		Function = function(callback)
 			if callback then
-				table.insert(AutoConsume.Connections, feftyEvents.InventoryAmountChanged.Event:Connect(AutoConsumeFunc))
-				table.insert(AutoConsume.Connections, feftyEvents.AttributeChanged.Event:Connect(function(changed)
+				table.insert(AutoConsume.Connections, vapeEvents.InventoryAmountChanged.Event:Connect(AutoConsumeFunc))
+				table.insert(AutoConsume.Connections, vapeEvents.AttributeChanged.Event:Connect(function(changed)
 					if changed:find("Shield") or changed:find("Health") or changed:find("speed") then 
 						AutoConsumeFunc()
 					end
@@ -7807,7 +7806,7 @@ runFunction(function()
 							type = "InventoryRemoveFromHotbar", 
 							slot = tonumber(hotbarslot) - 1
 						})
-						feftyEvents.InventoryChanged.Event:Wait()
+						vapeEvents.InventoryChanged.Event:Wait()
 					end
 					local newhotbaritemslot, newhotbaritem = findinhotbar(v)
 					if newhotbaritemslot then
@@ -7815,7 +7814,7 @@ runFunction(function()
 							type = "InventoryRemoveFromHotbar", 
 							slot = newhotbaritemslot - 1
 						})
-						feftyEvents.InventoryChanged.Event:Wait()
+						vapeEvents.InventoryChanged.Event:Wait()
 					end
 					if oldhotbaritem.item and newhotbaritemslot then 
 						local nextitem1, nextitem1num = findininventory(oldhotbaritem.item)
@@ -7824,7 +7823,7 @@ runFunction(function()
 							item = nextitem1, 
 							slot = newhotbaritemslot - 1
 						})
-						feftyEvents.InventoryChanged.Event:Wait()
+						vapeEvents.InventoryChanged.Event:Wait()
 					end
 					local nextitem2, nextitem2num = findininventory(v)
 					bedwars.ClientStoreHandler:dispatch({
@@ -7832,7 +7831,7 @@ runFunction(function()
 						item = nextitem2, 
 						slot = tonumber(hotbarslot) - 1
 					})
-					feftyEvents.InventoryChanged.Event:Wait()
+					vapeEvents.InventoryChanged.Event:Wait()
 				else
 					if AutoHotbarClear.Enabled then 
 						local newhotbaritemslot, newhotbaritem = findinhotbar(v)
@@ -7841,7 +7840,7 @@ runFunction(function()
 								type = "InventoryRemoveFromHotbar", 
 								slot = newhotbaritemslot - 1
 							})
-							feftyEvents.InventoryChanged.Event:Wait()
+							vapeEvents.InventoryChanged.Event:Wait()
 						end
 					end
 				end
@@ -7860,7 +7859,7 @@ runFunction(function()
 						AutoHotbar.ToggleButton(false)
 					end
 				else
-					table.insert(AutoHotbar.Connections, feftyEvents.InventoryAmountChanged.Event:Connect(function()
+					table.insert(AutoHotbar.Connections, vapeEvents.InventoryAmountChanged.Event:Connect(function()
 						if not AutoHotbar.Enabled then return end
 						AutoHotbarSort()
 					end))
@@ -8062,7 +8061,7 @@ runFunction(function()
 								until (not AutoKit.Enabled)
 							end)
 						elseif bedwarsStore.equippedKit == "angel" then 
-							table.insert(AutoKit.Connections, feftyEvents.AngelProgress.Event:Connect(function(angelTable)
+							table.insert(AutoKit.Connections, vapeEvents.AngelProgress.Event:Connect(function(angelTable)
 								task.wait(0.5)
 								if not AutoKit.Enabled then return end
 								if bedwars.ClientStoreHandler:getState().Kit.angelProgress >= 1 and lplr.Character:GetAttribute("AngelType") == nil then
@@ -8191,7 +8190,7 @@ runFunction(function()
 		Name = "AutoToxic",
 		Function = function(callback)
 			if callback then 
-				table.insert(AutoToxic.Connections, feftyEvents.BedwarsBedBreak.Event:Connect(function(bedTable)
+				table.insert(AutoToxic.Connections, vapeEvents.BedwarsBedBreak.Event:Connect(function(bedTable)
 					if AutoToxicBedDestroyed.Enabled and bedTable.brokenBedTeam.id == lplr:GetAttribute("Team") then
 						local custommsg = #AutoToxicPhrases6.ObjectList > 0 and AutoToxicPhrases6.ObjectList[math.random(1, #AutoToxicPhrases6.ObjectList)] or "How dare you break my bed >:( <name> | vxpe on top"
 						if custommsg then
@@ -8208,7 +8207,7 @@ runFunction(function()
 						replicatedStorageService.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(custommsg, "All")
 					end
 				end))
-				table.insert(AutoToxic.Connections, feftyEvents.EntityDeathEvent.Event:Connect(function(deathTable)
+				table.insert(AutoToxic.Connections, vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
 					if deathTable.finalKill then
 						local killer = playersService:GetPlayerFromCharacter(deathTable.fromEntity)
 						local killed = playersService:GetPlayerFromCharacter(deathTable.entityInstance)
@@ -8238,7 +8237,7 @@ runFunction(function()
 						end
 					end
 				end))
-				table.insert(AutoToxic.Connections, feftyEvents.MatchEndEvent.Event:Connect(function(winstuff)
+				table.insert(AutoToxic.Connections, vapeEvents.MatchEndEvent.Event:Connect(function(winstuff)
 					local myTeam = bedwars.ClientStoreHandler:getState().Game.myTeam
 					if myTeam and myTeam.id == winstuff.winningTeamId or lplr.Neutral then
 						if AutoToxicGG.Enabled then
@@ -8252,7 +8251,7 @@ runFunction(function()
 						end
 					end
 				end))
-				table.insert(AutoToxic.Connections, feftyEvents.LagbackEvent.Event:Connect(function(plr)
+				table.insert(AutoToxic.Connections, vapeEvents.LagbackEvent.Event:Connect(function(plr)
 					if AutoToxicLagback.Enabled then
 						local custommsg = #AutoToxicPhrases8.ObjectList > 0 and AutoToxicPhrases8.ObjectList[math.random(1, #AutoToxicPhrases8.ObjectList)]
 						if custommsg then
@@ -8931,8 +8930,8 @@ runFunction(function()
 		Function = function(val) 
 			if val == "Classic" then 
 				task.spawn(function()
-					repeat task.wait() until bedwarsStore.matchState ~= 0 or not feftyInjected
-					if feftyInjected and AntiVoidMoveMode.Value == "Classic" and antivoidypos == 0 then
+					repeat task.wait() until bedwarsStore.matchState ~= 0 or not vapeInjected
+					if vapeInjected and AntiVoidMoveMode.Value == "Classic" and antivoidypos == 0 then
 						local lowestypos = 99999
 						for i,v in pairs(bedwarsStore.blocks) do 
 							local newray = workspace:Raycast(v.Position + Vector3.new(0, 800, 0), Vector3.new(0, -1000, 0), bedwarsStore.blockRaycast)
@@ -9660,11 +9659,11 @@ runFunction(function()
 end)
 
 runFunction(function()
-	bedwarsStore.TPString = shared.feftyoverlay or nil
+	bedwarsStore.TPString = shared.vapeoverlay or nil
 	local origtpstring = bedwarsStore.TPString
 	local Overlay = GuiLibrary.CreateCustomWindow({
 		Name = "Overlay",
-		Icon = "fefty/assets/TargetIcon1.png",
+		Icon = "vape/assets/TargetIcon1.png",
 		IconSize = 16
 	})
 	local overlayframe = Instance.new("Frame")
@@ -9750,13 +9749,13 @@ runFunction(function()
 
 	GuiLibrary.ObjectsThatCanBeSaved["GUIWindow"]["Api"].CreateCustomToggle({
 		Name = "Overlay", 
-		Icon = "fefty/assets/TargetIcon1.png", 
+		Icon = "vape/assets/TargetIcon1.png", 
 		Function = function(callback)
 			overlayenabled = callback
 			Overlay.SetVisible(callback) 
 			if callback then 
 				table.insert(overlayconnections, bedwars.ClientHandler:OnEvent("ProjectileImpact", function(p3)
-					if not feftyInjected then return end
+					if not vapeInjected then return end
 					if p3.projectile == "telepearl" then 
 						teleported[p3.shooterPlayer] = true
 					elseif p3.projectile == "swap_ball" then
@@ -9777,21 +9776,21 @@ runFunction(function()
 					end
 				end))
 
-				table.insert(overlayconnections, feftyEvents.BedwarsBedBreak.Event:Connect(function(bedTable)
+				table.insert(overlayconnections, vapeEvents.BedwarsBedBreak.Event:Connect(function(bedTable)
 					if bedTable.player.UserId == lplr.UserId then
 						bedwarsStore.statistics.beds = bedwarsStore.statistics.beds + 1
 					end
 				end))
 
 				local victorysaid = false
-				table.insert(overlayconnections, feftyEvents.MatchEndEvent.Event:Connect(function(winstuff)
+				table.insert(overlayconnections, vapeEvents.MatchEndEvent.Event:Connect(function(winstuff)
 					local myTeam = bedwars.ClientStoreHandler:getState().Game.myTeam
 					if myTeam and myTeam.id == winstuff.winningTeamId or lplr.Neutral then
 						victorysaid = true
 					end
 				end))
 
-				table.insert(overlayconnections, feftyEvents.EntityDeathEvent.Event:Connect(function(deathTable)
+				table.insert(overlayconnections, vapeEvents.EntityDeathEvent.Event:Connect(function(deathTable)
 					if deathTable.finalKill then
 						local killer = playersService:GetPlayerFromCharacter(deathTable.fromEntity)
 						local killed = playersService:GetPlayerFromCharacter(deathTable.entityInstance)
@@ -9841,14 +9840,14 @@ runFunction(function()
 						for i, v in pairs(entityLibrary.entityList) do 
 							if teleportconnections[v.Player.Name.."1"] then continue end
 							teleportconnections[v.Player.Name.."1"] = v.Player:GetAttributeChangedSignal("LastTeleported"):Connect(function()
-								if not feftyInjected then return end
+								if not vapeInjected then return end
 								for i = 1, 15 do 
 									task.wait(0.1)
 									if teleported[v.Player] or teleported2[v.Player] or matchstatetick > tick() or math.abs(v.Player:GetAttribute("SpawnTime") - v.Player:GetAttribute("LastTeleported")) < 3 or (teleportedability[v.Player] or tick() - 1) > tick() then break end
 								end
 								if v.Player ~= nil and (not v.Player.Neutral) and teleported[v.Player] == nil and teleported2[v.Player] == nil and (teleportedability[v.Player] or tick() - 1) < tick() and math.abs(v.Player:GetAttribute("SpawnTime") - v.Player:GetAttribute("LastTeleported")) > 3 and matchstatetick <= tick() then 
 									bedwarsStore.statistics.universalLagbacks = bedwarsStore.statistics.universalLagbacks + 1
-									feftyEvents.LagbackEvent:Fire(v.Player)
+									vapeEvents.LagbackEvent:Fire(v.Player)
 								end
 								teleported[v.Player] = nil
 							end)
@@ -9880,71 +9879,71 @@ end)
 
 task.spawn(function()
 	local function createannouncement(announcetab)
-		local feftynotifframe = Instance.new("TextButton")
-		feftynotifframe.AnchorPoint = Vector2.new(0.5, 0)
-		feftynotifframe.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
-		feftynotifframe.Size = UDim2.new(1, -10, 0, 50)
-		feftynotifframe.Position = UDim2.new(0.5, 0, 0, -100)
-		feftynotifframe.AutoButtonColor = false
-		feftynotifframe.Text = ""
-		feftynotifframe.Parent = shared.GuiLibrary.MainGui
-		local feftynotifframecorner = Instance.new("UICorner")
-		feftynotifframecorner.CornerRadius = UDim.new(0, 256)
-		feftynotifframecorner.Parent = feftynotifframe
-		local feftyicon = Instance.new("Frame")
-		feftyicon.Size = UDim2.new(0, 40, 0, 40)
-		feftyicon.Position = UDim2.new(0, 5, 0, 5)
-		feftyicon.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
-		feftyicon.Parent = feftynotifframe
-		local feftyiconicon = Instance.new("ImageLabel")
-		feftyiconicon.BackgroundTransparency = 1
-		feftyiconicon.Size = UDim2.new(1, -10, 1, -10)
-		feftyiconicon.AnchorPoint = Vector2.new(0.5, 0.5)
-		feftyiconicon.Position = UDim2.new(0.5, 0, 0.5, 0)
-		feftyiconicon.Image = getsynasset("fefty/assets/feftyIcon.png")
-		feftyiconicon.Parent = feftyicon
-		local feftyiconcorner = Instance.new("UICorner")
-		feftyiconcorner.CornerRadius = UDim.new(0, 256)
-		feftyiconcorner.Parent = feftyicon
-		local feftytext = Instance.new("TextLabel")
-		feftytext.Size = UDim2.new(1, -55, 1, -10)
-		feftytext.Position = UDim2.new(0, 50, 0, 5)
-		feftytext.BackgroundTransparency = 1
-		feftytext.TextScaled = true
-		feftytext.RichText = true
-		feftytext.Font = Enum.Font.Ubuntu
-		feftytext.Text = announcetab.Text
-		feftytext.TextColor3 = Color3.new(1, 1, 1)
-		feftytext.TextXAlignment = Enum.TextXAlignment.Left
-		feftytext.Parent = feftynotifframe
-		tweenService:Create(feftynotifframe, TweenInfo.new(0.3), {Position = UDim2.new(0.5, 0, 0, 5)}):Play()
+		local vapenotifframe = Instance.new("TextButton")
+		vapenotifframe.AnchorPoint = Vector2.new(0.5, 0)
+		vapenotifframe.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+		vapenotifframe.Size = UDim2.new(1, -10, 0, 50)
+		vapenotifframe.Position = UDim2.new(0.5, 0, 0, -100)
+		vapenotifframe.AutoButtonColor = false
+		vapenotifframe.Text = ""
+		vapenotifframe.Parent = shared.GuiLibrary.MainGui
+		local vapenotifframecorner = Instance.new("UICorner")
+		vapenotifframecorner.CornerRadius = UDim.new(0, 256)
+		vapenotifframecorner.Parent = vapenotifframe
+		local vapeicon = Instance.new("Frame")
+		vapeicon.Size = UDim2.new(0, 40, 0, 40)
+		vapeicon.Position = UDim2.new(0, 5, 0, 5)
+		vapeicon.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
+		vapeicon.Parent = vapenotifframe
+		local vapeiconicon = Instance.new("ImageLabel")
+		vapeiconicon.BackgroundTransparency = 1
+		vapeiconicon.Size = UDim2.new(1, -10, 1, -10)
+		vapeiconicon.AnchorPoint = Vector2.new(0.5, 0.5)
+		vapeiconicon.Position = UDim2.new(0.5, 0, 0.5, 0)
+		vapeiconicon.Image = getsynasset("vape/assets/VapeIcon.png")
+		vapeiconicon.Parent = vapeicon
+		local vapeiconcorner = Instance.new("UICorner")
+		vapeiconcorner.CornerRadius = UDim.new(0, 256)
+		vapeiconcorner.Parent = vapeicon
+		local vapetext = Instance.new("TextLabel")
+		vapetext.Size = UDim2.new(1, -55, 1, -10)
+		vapetext.Position = UDim2.new(0, 50, 0, 5)
+		vapetext.BackgroundTransparency = 1
+		vapetext.TextScaled = true
+		vapetext.RichText = true
+		vapetext.Font = Enum.Font.Ubuntu
+		vapetext.Text = announcetab.Text
+		vapetext.TextColor3 = Color3.new(1, 1, 1)
+		vapetext.TextXAlignment = Enum.TextXAlignment.Left
+		vapetext.Parent = vapenotifframe
+		tweenService:Create(vapenotifframe, TweenInfo.new(0.3), {Position = UDim2.new(0.5, 0, 0, 5)}):Play()
 		local sound = Instance.new("Sound")
 		sound.PlayOnRemove = true
 		sound.SoundId = "rbxassetid://6732495464"
 		sound.Parent = workspace
 		sound:Destroy()
-		feftynotifframe.MouseButton1Click:Connect(function()
+		vapenotifframe.MouseButton1Click:Connect(function()
 			local sound = Instance.new("Sound")
 			sound.PlayOnRemove = true
 			sound.SoundId = "rbxassetid://6732690176"
 			sound.Parent = workspace
 			sound:Destroy()
-			feftynotifframe:Destroy()
+			vapenotifframe:Destroy()
 		end)
-		game:GetService("Debris"):AddItem(feftynotifframe, announcetab.Time or 20)
+		game:GetService("Debris"):AddItem(vapenotifframe, announcetab.Time or 20)
 	end
 
 	local function rundata(datatab, olddatatab)
 		if not olddatatab then
 			if datatab.Disabled then 
 				coroutine.resume(coroutine.create(function()
-					repeat task.wait() until shared.feftyFullyLoaded
+					repeat task.wait() until shared.VapeFullyLoaded
 					task.wait(1)
 					GuiLibrary.SelfDestruct()
 				end))
 				game:GetService("StarterGui"):SetCore("SendNotification", {
-					Title = "fefty",
-					Text = "fefty is currently disabled, please use fefty later.",
+					Title = "Vape",
+					Text = "Vape is currently disabled, please use vape later.",
 					Duration = 30,
 				})
 			end
@@ -9954,13 +9953,13 @@ task.spawn(function()
 		else
 			if datatab.Disabled then 
 				coroutine.resume(coroutine.create(function()
-					repeat task.wait() until shared.feftyFullyLoaded
+					repeat task.wait() until shared.VapeFullyLoaded
 					task.wait(1)
 					GuiLibrary.SelfDestruct()
 				end))
 				game:GetService("StarterGui"):SetCore("SendNotification", {
-					Title = "fefty",
-					Text = "fefty is currently disabled, please use fefty later.",
+					Title = "Vape",
+					Text = "Vape is currently disabled, please use vape later.",
 					Duration = 30,
 				})
 			end
@@ -9976,7 +9975,7 @@ task.spawn(function()
 	end
 	task.spawn(function()
 		pcall(function()
-			if not isfile("fefty/Profiles/bedwarsdata.txt") then 
+			if not isfile("vape/Profiles/bedwarsdata.txt") then 
 				local commit = "main"
 				for i,v in pairs(game:HttpGet("https://github.com/cinarkagan/fefty"):split("\n")) do 
 					if v:find("commit") and v:find("fragment") then 
@@ -9985,9 +9984,9 @@ task.spawn(function()
 						break
 					end
 				end
-				writefile("fefty/Profiles/bedwarsdata.txt", game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..commit.."/CustomModules/bedwarsdata", true))
+				writefile("vape/Profiles/bedwarsdata.txt", game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..commit.."/CustomModules/bedwarsdata", true))
 			end
-			local olddata = readfile("fefty/Profiles/bedwarsdata.txt")
+			local olddata = readfile("vape/Profiles/bedwarsdata.txt")
 
 			repeat
 				local commit = "main"
@@ -10003,11 +10002,11 @@ task.spawn(function()
 				if newdata ~= olddata then 
 					rundata(game:GetService("HttpService"):JSONDecode(newdata), game:GetService("HttpService"):JSONDecode(olddata))
 					olddata = newdata
-					writefile("fefty/Profiles/bedwarsdata.txt", newdata)
+					writefile("vape/Profiles/bedwarsdata.txt", newdata)
 				end
 
 				task.wait(10)
-			until not feftyInjected
+			until not vapeInjected
 		end)
 	end)
 end)

@@ -1,6 +1,6 @@
-if shared.feftyExecuted then
-	local VERSION = "4.09"..(shared.feftyPrivate and " PRIVATE" or "").." "..readfile("fefty/commithash.txt"):sub(1, 6)
-	local baseDirectory = (shared.feftyPrivate and "feftyprivate/" or "fefty/")
+if shared.VapeExecuted then
+	local VERSION = "4.09"..(shared.VapePrivate and " PRIVATE" or "").." "..readfile("vape/commithash.txt"):sub(1, 6)
+	local baseDirectory = (shared.VapePrivate and "vapeprivate/" or "vape/")
 	local universalRainbowValue = 0
 	local getcustomasset = getsynasset or getcustomasset or function(location) return "rbxasset://"..location end
 	local requestfunc = syn and syn.request or http and http.request or http_request or fluxus and fluxus.request or request or function() end 
@@ -30,7 +30,7 @@ if shared.feftyExecuted then
 	local guiService = game:GetService("GuiService")
 	local textService = game:GetService("TextService")
 
-	local translations = shared.feftyTranslation or {}
+	local translations = shared.VapeTranslation or {}
 	local translatedlogo = false
 
 	coroutine.resume(coroutine.create(function()
@@ -40,7 +40,7 @@ if shared.feftyExecuted then
 			if universalRainbowValue > 1 then
 				universalRainbowValue = universalRainbowValue - 1
 			end
-		until not shared.feftyExecuted
+		until not shared.VapeExecuted
 	end))
 
 	local capturedslider = nil
@@ -82,19 +82,19 @@ if shared.feftyExecuted then
 	end
 	GuiLibrary["MainGui"] = gui
 
-	local feftyCachedAssets = {}
-	local function feftyGithubRequest(scripturl)
-		if not isfile("fefty/"..scripturl) then
-			local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("fefty/commithash.txt").."/"..scripturl, true) end)
+	local vapeCachedAssets = {}
+	local function vapeGithubRequest(scripturl)
+		if not isfile("vape/"..scripturl) then
+			local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
 			assert(suc, res)
 			assert(res ~= "404: Not Found", res)
 			if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
-			writefile("fefty/"..scripturl, res)
+			writefile("vape/"..scripturl, res)
 		end
-		return readfile("fefty/"..scripturl)
+		return readfile("vape/"..scripturl)
 	end
 	
-	local function downloadfeftyAsset(path)
+	local function downloadVapeAsset(path)
 		if not isfile(path) then
 			task.spawn(function()
 				local textlabel = Instance.new("TextLabel")
@@ -110,15 +110,15 @@ if shared.feftyExecuted then
 				repeat task.wait() until isfile(path)
 				textlabel:Destroy()
 			end)
-			local suc, req = pcall(function() return feftyGithubRequest(path:gsub("fefty/assets", "assets")) end)
+			local suc, req = pcall(function() return vapeGithubRequest(path:gsub("vape/assets", "assets")) end)
 			if suc and req then
 				writefile(path, req)
 			else
 				return ""
 			end
 		end
-		if not feftyCachedAssets[path] then feftyCachedAssets[path] = getcustomasset(path) end
-		return feftyCachedAssets[path] 
+		if not vapeCachedAssets[path] then vapeCachedAssets[path] = getcustomasset(path) end
+		return vapeCachedAssets[path] 
 	end
 
 	GuiLibrary["UpdateHudEvent"] = Instance.new("BindableEvent")
@@ -154,7 +154,7 @@ if shared.feftyExecuted then
 	local searchbaricon = Instance.new("ImageLabel")
 	searchbaricon.BackgroundTransparency = 1
 	searchbaricon.ZIndex = 10
-	searchbaricon.Image = downloadfeftyAsset("fefty/assets/SearchBarIcon.png")
+	searchbaricon.Image = downloadVapeAsset("vape/assets/SearchBarIcon.png")
 	searchbaricon.Size = UDim2.new(0, 14, 0, 14)
 	searchbaricon.Position = UDim2.new(1, -32, 0, 10)
 	searchbaricon.Parent = searchbarmain
@@ -173,7 +173,7 @@ if shared.feftyExecuted then
 	local searchbarshadow = Instance.new("ImageLabel")
 	searchbarshadow.AnchorPoint = Vector2.new(0.5, 0.5)
 	searchbarshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-	searchbarshadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
+	searchbarshadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
 	searchbarshadow.BackgroundTransparency = 1
 	searchbarshadow.ZIndex = -1
 	searchbarshadow.Size = UDim2.new(1, 6, 1, 6)
@@ -220,7 +220,7 @@ if shared.feftyExecuted then
 	local hoverboxshadow = Instance.new("ImageLabel")
 	hoverboxshadow.AnchorPoint = Vector2.new(0.5, 0.5)
 	hoverboxshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-	hoverboxshadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
+	hoverboxshadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
 	hoverboxshadow.BackgroundTransparency = 1
 	hoverboxshadow.ZIndex = -1
 	hoverboxshadow.Visible = true
@@ -309,7 +309,7 @@ if shared.feftyExecuted then
 
 	GuiLibrary.SaveSettings = function()
 		if loadedsuccessfully then
-			writefile(baseDirectory.."Profiles/"..(shared.CustomSavefefty or game.PlaceId)..".feftyprofiles.txt", httpService:JSONEncode(GuiLibrary.Profiles))
+			writefile(baseDirectory.."Profiles/"..(shared.CustomSaveVape or game.PlaceId)..".vapeprofiles.txt", httpService:JSONEncode(GuiLibrary.Profiles))
 			local WindowTable = {}
 			for i,v in pairs(GuiLibrary.ObjectsThatCanBeSaved) do
 				if v.Type == "Window" then
@@ -369,8 +369,8 @@ if shared.feftyExecuted then
 				end
 			end
 			WindowTable["GUIKeybind"] = {["Type"] = "GUIKeybind", ["Value"] = GuiLibrary["GUIKeybind"]}
-			writefile(baseDirectory.."Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSavefefty or game.PlaceId)..".feftyprofile.txt", httpService:JSONEncode(GuiLibrary.Settings))
-			writefile(baseDirectory.."Profiles/"..(game.GameId).."GUIPositions.feftyprofile.txt", httpService:JSONEncode(WindowTable))
+			writefile(baseDirectory.."Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt", httpService:JSONEncode(GuiLibrary.Settings))
+			writefile(baseDirectory.."Profiles/"..(game.GameId).."GUIPositions.vapeprofile.txt", httpService:JSONEncode(WindowTable))
 		end
 	end
 
@@ -379,7 +379,7 @@ if shared.feftyExecuted then
 			for i,v in pairs(listfiles(baseDirectory.."Profiles")) do 
 				local newstr = v:gsub(baseDirectory.."Profiles", ""):sub(2, v:len())
 				local ext = (v:len() >= 12 and v:sub(v:len() - 12, v:len()))
-				if (ext and ext:find("feftyprofile") and ext:find("txt") == nil) then
+				if (ext and ext:find("vapeprofile") and ext:find("txt") == nil) then
 					writefile(baseDirectory.."Profiles/"..newstr..".txt", readfile(baseDirectory.."Profiles/"..newstr))
 					if delfile then
 						delfile(baseDirectory.."Profiles/"..newstr)
@@ -387,20 +387,20 @@ if shared.feftyExecuted then
 				end
 			end
 		end
-		if isfile("fefty/Profiles/GUIPositions.feftyprofile.txt") and game.GameId == 2619619496 then
-			writefile("fefty/Profiles/"..(game.GameId).."GUIPositions.feftyprofile.txt", readfile("fefty/Profiles/GUIPositions.feftyprofile.txt"))
-			if delfile then delfile("fefty/Profiles/GUIPositions.feftyprofile.txt") end
+		if isfile("vape/Profiles/GUIPositions.vapeprofile.txt") and game.GameId == 2619619496 then
+			writefile("vape/Profiles/"..(game.GameId).."GUIPositions.vapeprofile.txt", readfile("vape/Profiles/GUIPositions.vapeprofile.txt"))
+			if delfile then delfile("vape/Profiles/GUIPositions.vapeprofile.txt") end
 		end
-		if shared.feftyPrivate then
-			if isfile("feftyprivate/Profiles/"..(game.GameId).."GUIPositions.feftyprofile.txt") == false and isfile("fefty/Profiles/"..(game.GameId).."GUIPositions.feftyprofile.txt") then
-				writefile("feftyprivate/Profiles/"..(game.GameId).."GUIPositions.feftyprofile.txt", readfile("fefty/Profiles/"..(game.GameId).."GUIPositions.feftyprofile.txt"))
+		if shared.VapePrivate then
+			if isfile("vapeprivate/Profiles/"..(game.GameId).."GUIPositions.vapeprofile.txt") == false and isfile("vape/Profiles/"..(game.GameId).."GUIPositions.vapeprofile.txt") then
+				writefile("vapeprivate/Profiles/"..(game.GameId).."GUIPositions.vapeprofile.txt", readfile("vape/Profiles/"..(game.GameId).."GUIPositions.vapeprofile.txt"))
 			end
-			if isfile("feftyprivate/Profiles/"..(shared.CustomSavefefty or game.PlaceId)..".feftyprofiles.txt") == false and isfile("fefty/Profiles/"..(shared.CustomSavefefty or game.PlaceId)..".feftyprofiles.txt") then
-				writefile("feftyprivate/Profiles/"..(shared.CustomSavefefty or game.PlaceId)..".feftyprofiles.txt", readfile("fefty/Profiles/"..(shared.CustomSavefefty or game.PlaceId)..".feftyprofiles.txt"))
+			if isfile("vapeprivate/Profiles/"..(shared.CustomSaveVape or game.PlaceId)..".vapeprofiles.txt") == false and isfile("vape/Profiles/"..(shared.CustomSaveVape or game.PlaceId)..".vapeprofiles.txt") then
+				writefile("vapeprivate/Profiles/"..(shared.CustomSaveVape or game.PlaceId)..".vapeprofiles.txt", readfile("vape/Profiles/"..(shared.CustomSaveVape or game.PlaceId)..".vapeprofiles.txt"))
 			end
 		end
 		local success2, result2 = pcall(function()
-			return httpService:JSONDecode(readfile(baseDirectory.."Profiles/"..(shared.CustomSavefefty or game.PlaceId)..".feftyprofiles.txt"))
+			return httpService:JSONDecode(readfile(baseDirectory.."Profiles/"..(shared.CustomSaveVape or game.PlaceId)..".vapeprofiles.txt"))
 		end)
 		if success2 and type(result2) == "table" then
 			GuiLibrary.Profiles = result2
@@ -415,13 +415,13 @@ if shared.feftyExecuted then
 			GuiLibrary.Profiles[customprofile] = GuiLibrary.Profiles[customprofile] or {["Keybind"] = "", ["Selected"] = true}
 			GuiLibrary.CurrentProfile = customprofile
 		end
-		if shared.feftyPrivate then
-			if isfile("feftyprivate/Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSavefefty or game.PlaceId)..".feftyprofile.txt") == false and isfile("fefty/Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSavefefty or game.PlaceId)..".feftyprofile.txt") then
-				writefile("feftyprivate/Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSavefefty or game.PlaceId)..".feftyprofile.txt", readfile("fefty/Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSavefefty or game.PlaceId)..".feftyprofile.txt"))
+		if shared.VapePrivate then
+			if isfile("vapeprivate/Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt") == false and isfile("vape/Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt") then
+				writefile("vapeprivate/Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt", readfile("vape/Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt"))
 			end
 		end
 		local success3, result3 = pcall(function()
-			return httpService:JSONDecode(readfile(baseDirectory.."Profiles/"..(game.GameId).."GUIPositions.feftyprofile.txt"))
+			return httpService:JSONDecode(readfile(baseDirectory.."Profiles/"..(game.GameId).."GUIPositions.vapeprofile.txt"))
 		end)
 		if success3 and type(result3) == "table" then
 			for i,v in pairs(result3) do
@@ -483,7 +483,7 @@ if shared.feftyExecuted then
 			end
 		end
 		local success, result = pcall(function()
-			return httpService:JSONDecode(readfile(baseDirectory.."Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSavefefty or game.PlaceId)..".feftyprofile.txt"))
+			return httpService:JSONDecode(readfile(baseDirectory.."Profiles/"..(GuiLibrary.CurrentProfile == "default" and "" or GuiLibrary.CurrentProfile)..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt"))
 		end)
 		if success and type(result) == "table" then
 			GuiLibrary["LoadSettingsEvent"]:Fire(result)
@@ -583,20 +583,20 @@ if shared.feftyExecuted then
 	GuiLibrary["SwitchProfile"] = function(profilename)
 		GuiLibrary.Profiles[GuiLibrary.CurrentProfile]["Selected"] = false
 		GuiLibrary.Profiles[profilename]["Selected"] = true
-		if (not isfile(baseDirectory.."Profiles/"..(profilename == "default" and "" or profilename)..(shared.CustomSavefefty or game.PlaceId)..".feftyprofile.txt")) then
+		if (not isfile(baseDirectory.."Profiles/"..(profilename == "default" and "" or profilename)..(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt")) then
 			local realprofile = GuiLibrary.CurrentProfile
 			GuiLibrary.CurrentProfile = profilename
 			GuiLibrary.SaveSettings()
 			GuiLibrary.CurrentProfile = realprofile
 		end
-		local feftyprivate = shared.feftyPrivate
-		local oldindependent = shared.feftyIndependent
+		local vapeprivate = shared.VapePrivate
+		local oldindependent = shared.VapeIndependent
 		GuiLibrary.SelfDestruct()
 		if not oldindependent then
-			shared.feftySwitchServers = true
-			shared.feftyOpenGui = (clickgui.Visible)
-			shared.feftyPrivate = feftyprivate
-			loadstring(feftyGithubRequest("NewMainScript.lua"))()
+			shared.VapeSwitchServers = true
+			shared.VapeOpenGui = (clickgui.Visible)
+			shared.VapePrivate = vapeprivate
+			loadstring(vapeGithubRequest("NewMainScript.lua"))()
 		end
 	end
 
@@ -620,7 +620,7 @@ if shared.feftyExecuted then
 		local windowshadow = Instance.new("ImageLabel")
 		windowshadow.AnchorPoint = Vector2.new(0.5, 0.5)
 		windowshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-		windowshadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
+		windowshadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
 		windowshadow.BackgroundTransparency = 1
 		windowshadow.ZIndex = -1
 		windowshadow.Size = UDim2.new(1, 6, 1, 6)
@@ -633,7 +633,7 @@ if shared.feftyExecuted then
 		windowlogo1.Active = false
 		windowlogo1.Position = UDim2.new(0, 11, 0, 12)
 		windowlogo1.BackgroundTransparency = 1
-		windowlogo1.Image = downloadfeftyAsset("fefty/assets/feftyLogo1.png")
+		windowlogo1.Image = downloadVapeAsset("vape/assets/VapeLogo1.png")
 		windowlogo1.Name = "Logo1"
 		windowlogo1.Parent = windowtitle
 		local windowlogo2 = Instance.new("ImageLabel")
@@ -642,7 +642,7 @@ if shared.feftyExecuted then
 		windowlogo2.Position = UDim2.new(1, 1, 0, 1)
 		windowlogo2.BackgroundTransparency = 1
 		windowlogo2.ImageColor3 = Color3.fromHSV(0.44, 1, 1)
-		windowlogo2.Image = downloadfeftyAsset("fefty/assets/feftyLogo2.png")
+		windowlogo2.Image = downloadVapeAsset("vape/assets/VapeLogo2.png")
 		windowlogo2.Name = "Logo2"
 		windowlogo2.Parent = windowlogo1
 		local settingstext = Instance.new("TextLabel")
@@ -673,7 +673,7 @@ if shared.feftyExecuted then
 		settingsbox2.TextColor3 = Color3.fromRGB(80, 80, 80)
 		settingsbox2.Font = Enum.Font.SourceSans
 		settingsbox2.TextXAlignment = Enum.TextXAlignment.Right
-		settingsbox2.Text = "fefty "..VERSION.."  "
+		settingsbox2.Text = "Vape "..VERSION.."  "
 		settingsbox2.TextSize = 16
 		settingsbox2.Parent = windowtitle
 		local settingsbox3 = Instance.new("Frame")
@@ -685,7 +685,7 @@ if shared.feftyExecuted then
 		local settingswheel = Instance.new("ImageButton")
 		settingswheel.Name = "SettingsWheel"
 		settingswheel.Size = UDim2.new(0, 14, 0, 14)
-		settingswheel.Image = downloadfeftyAsset("fefty/assets/SettingsWheel1.png")
+		settingswheel.Image = downloadVapeAsset("vape/assets/SettingsWheel1.png")
 		settingswheel.Position = UDim2.new(1, -25, 0, 14)
 		settingswheel.BackgroundTransparency = 1
 		settingswheel.Parent = windowtitle
@@ -699,7 +699,7 @@ if shared.feftyExecuted then
 		local discordbutton = settingswheel:Clone()
 		discordbutton.Size = UDim2.new(0, 16, 0, 16)
 		discordbutton.ImageColor3 = Color3.new(1, 1, 1)
-		discordbutton.Image = downloadfeftyAsset("fefty/assets/DiscordIcon.png")
+		discordbutton.Image = downloadVapeAsset("vape/assets/DiscordIcon.png")
 		discordbutton.Position = UDim2.new(1, -52, 0, 13)
 		discordbutton.Parent = windowtitle
 		discordbutton.MouseButton1Click:Connect(function()
@@ -755,7 +755,7 @@ if shared.feftyExecuted then
 		settingsexit.ImageColor3 = Color3.fromRGB(121, 121, 121)
 		settingsexit.Size = UDim2.new(0, 24, 0, 24)
 		settingsexit.AutoButtonColor = false
-		settingsexit.Image = downloadfeftyAsset("fefty/assets/ExitIcon1.png")
+		settingsexit.Image = downloadVapeAsset("vape/assets/ExitIcon1.png")
 		settingsexit.Visible = false
 		settingsexit.Position = UDim2.new(1, -31, 0, 8)
 		settingsexit.BackgroundColor3 = settingsexithovercolor
@@ -802,7 +802,7 @@ if shared.feftyExecuted then
 		overlaysicon.Name = "OverlaysWindowIcon"
 		overlaysicon.Size = UDim2.new(0, 14, 0, 12)
 		overlaysicon.Visible = true
-		overlaysicon.Image = downloadfeftyAsset("fefty/assets/TextGUIIcon4.png")
+		overlaysicon.Image = downloadVapeAsset("vape/assets/TextGUIIcon4.png")
 		overlaysicon.ImageColor3 = Color3.fromRGB(209, 209, 209)
 		overlaysicon.BackgroundTransparency = 1
 		overlaysicon.Position = UDim2.new(0, 10, 0, 15)
@@ -812,7 +812,7 @@ if shared.feftyExecuted then
 		overlaysexit.ImageColor3 = Color3.fromRGB(121, 121, 121)
 		overlaysexit.Size = UDim2.new(0, 24, 0, 24)
 		overlaysexit.AutoButtonColor = false
-		overlaysexit.Image = downloadfeftyAsset("fefty/assets/ExitIcon1.png")
+		overlaysexit.Image = downloadVapeAsset("vape/assets/ExitIcon1.png")
 		overlaysexit.Position = UDim2.new(1, -32, 0, 9)
 		overlaysexit.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
 		overlaysexit.Parent = overlaystitle
@@ -831,7 +831,7 @@ if shared.feftyExecuted then
 		overlaysbutton.Position = UDim2.new(1, -23, 0, 15)
 		overlaysbutton.BackgroundTransparency = 1
 		overlaysbutton.AutoButtonColor = false
-		overlaysbutton.Image = downloadfeftyAsset("fefty/assets/TextGUIIcon2.png")
+		overlaysbutton.Image = downloadVapeAsset("vape/assets/TextGUIIcon2.png")
 		overlaysbutton.Parent = extraframe
 		local overlaystext = Instance.new("TextLabel")
 		overlaystext.Size = UDim2.new(0, 155, 0, 39)
@@ -933,7 +933,7 @@ if shared.feftyExecuted then
 		windowbackbutton.MouseLeave:Connect(function()
 			windowbackbutton.ImageTransparency = 0.55
 		end)
-		windowbackbutton.Image = downloadfeftyAsset("fefty/assets/BackIcon.png")
+		windowbackbutton.Image = downloadVapeAsset("vape/assets/BackIcon.png")
 		windowbackbutton.Parent = windowtitle
 		dragGUI(windowtitle)
 		windowapi["ExpandToggle"] = function() end
@@ -1014,7 +1014,7 @@ if shared.feftyExecuted then
 			buttonicon.Size = UDim2.new(0, 20, 0, 19)
 			buttonicon.Position = UDim2.new(0, 10, 0, 11)
 			buttonicon.BackgroundTransparency = 1
-			buttonicon.Image = downloadfeftyAsset(argstable["Icon"])
+			buttonicon.Image = downloadVapeAsset(argstable["Icon"])
 			buttonicon.Parent = buttontext
 			local toggleframe1 = Instance.new("TextButton")
 			toggleframe1.AutoButtonColor = false
@@ -1043,7 +1043,7 @@ if shared.feftyExecuted then
 			toggleicon.BackgroundTransparency = 1
 			toggleicon.Visible = false
 			toggleicon.LayoutOrder = argstable["Priority"]
-			toggleicon.Image = downloadfeftyAsset(argstable["Icon"])
+			toggleicon.Image = downloadVapeAsset(argstable["Icon"])
 			toggleicon.Parent = overlaysicons
 
 			buttonapi["Enabled"] = false
@@ -1091,7 +1091,7 @@ if shared.feftyExecuted then
 			end)
 
 			
-			GuiLibrary.ObjectsThatCanBeSaved["feftySettings"..argstable["Name"].."Toggle"] = {["Type"] = "Toggle", ["Object"] = buttontext, ["Api"] = buttonapi}
+			GuiLibrary.ObjectsThatCanBeSaved["VapeSettings"..argstable["Name"].."Toggle"] = {["Type"] = "Toggle", ["Object"] = buttontext, ["Api"] = buttonapi}
 			return buttonapi
 		end
 
@@ -1165,7 +1165,7 @@ if shared.feftyExecuted then
 				arrow.BackgroundTransparency = 1
 				arrow.Name = "RightArrow"
 				arrow.Position = UDim2.new(1, -20, 0, 16)
-				arrow.Image = downloadfeftyAsset("fefty/assets/RightArrow.png")
+				arrow.Image = downloadVapeAsset("vape/assets/RightArrow.png")
 				arrow.Active = false
 				arrow.Parent = button
 				local windowbackbutton2 = Instance.new("ImageButton")
@@ -1191,7 +1191,7 @@ if shared.feftyExecuted then
 				windowbackbutton2.MouseLeave:Connect(function()
 					windowbackbutton2.ImageTransparency = 0.55
 				end)
-				windowbackbutton2.Image = downloadfeftyAsset("fefty/assets/BackIcon.png")
+				windowbackbutton2.Image = downloadVapeAsset("vape/assets/BackIcon.png")
 				windowbackbutton2.Parent = windowtitle
 				button.MouseEnter:Connect(function() 
 					tweenService:Create(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(31, 30, 31)}):Play()
@@ -1241,7 +1241,7 @@ if shared.feftyExecuted then
 					buttonarrow.Position = UDim2.new(0, 0, 1, -4)
 					buttonarrow.BackgroundTransparency = 1
 					buttonarrow.Name = "ToggleArrow"
-					buttonarrow.Image = downloadfeftyAsset("fefty/assets/ToggleArrow.png")
+					buttonarrow.Image = downloadVapeAsset("vape/assets/ToggleArrow.png")
 					buttonarrow.Visible = false
 					buttonarrow.Parent = buttontext
 					local toggleframe1 = Instance.new("Frame")
@@ -1393,7 +1393,7 @@ if shared.feftyExecuted then
 					slider3.Size = UDim2.new(0, 24, 0, 16)
 					slider3.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
 					slider3.BorderSizePixel = 0
-					slider3.Image = downloadfeftyAsset("fefty/assets/SliderButton1.png")
+					slider3.Image = downloadVapeAsset("vape/assets/SliderButton1.png")
 					slider3.Position = UDim2.new(1, -11, 0, -7)
 					slider3.Parent = slider2
 					slider3.Name = "ButtonSlider"
@@ -1557,7 +1557,7 @@ if shared.feftyExecuted then
 			bindbkg.Visible = true
 			bindbkg.Parent = frame
 			local bindimg = Instance.new("ImageLabel")
-			bindimg.Image = downloadfeftyAsset("fefty/assets/KeybindIcon.png")
+			bindimg.Image = downloadVapeAsset("vape/assets/KeybindIcon.png")
 			bindimg.BackgroundTransparency = 1
 			bindimg.ImageColor3 = Color3.fromRGB(225, 225, 225)
 			bindimg.Size = UDim2.new(0, 12, 0, 12)
@@ -1576,7 +1576,7 @@ if shared.feftyExecuted then
 			bindtext.Visible = (GuiLibrary["GUIKeybind"] ~= "")
 			local bindtext2 = Instance.new("ImageLabel")
 			bindtext2.Size = UDim2.new(0, 154, 0, 41)
-			bindtext2.Image = downloadfeftyAsset("fefty/assets/BindBackground.png")
+			bindtext2.Image = downloadVapeAsset("vape/assets/BindBackground.png")
 			bindtext2.BackgroundTransparency = 1
 			bindtext2.ScaleType = Enum.ScaleType.Slice
 			bindtext2.SliceCenter = Rect.new(0, 0, 140, 41)
@@ -1618,12 +1618,12 @@ if shared.feftyExecuted then
 				end
 			end)
 			bindbkg.MouseEnter:Connect(function() 
-				bindimg.Image = downloadfeftyAsset("fefty/assets/PencilIcon.png") 
+				bindimg.Image = downloadVapeAsset("vape/assets/PencilIcon.png") 
 				bindimg.Visible = true
 				bindtext.Visible = false
 			end)
 			bindbkg.MouseLeave:Connect(function() 
-				bindimg.Image = downloadfeftyAsset("fefty/assets/KeybindIcon.png")
+				bindimg.Image = downloadVapeAsset("vape/assets/KeybindIcon.png")
 				if GuiLibrary["GUIKeybind"] ~= "" then
 					bindimg.Visible = false
 					bindtext.Visible = true
@@ -1712,7 +1712,7 @@ if shared.feftyExecuted then
 			slider1.Name = "Slider"
 			slider1.Parent = frame
 			local sliderrainbow = Instance.new("ImageButton")
-			sliderrainbow.Image = downloadfeftyAsset("fefty/assets/RainbowIcon1.png")
+			sliderrainbow.Image = downloadVapeAsset("vape/assets/RainbowIcon1.png")
 			sliderrainbow.BackgroundTransparency = 1
 			sliderrainbow.Size = UDim2.new(0, 12, 0, 12)
 			sliderrainbow.Position = UDim2.new(1, -43, 0, 10)
@@ -1735,7 +1735,7 @@ if shared.feftyExecuted then
 			slider3.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
 			slider3.BorderSizePixel = 0
 			slider3.ZIndex = 2
-			slider3.Image = downloadfeftyAsset("fefty/assets/ColorSlider1.png")
+			slider3.Image = downloadVapeAsset("vape/assets/ColorSlider1.png")
 			slider3.Position = UDim2.new(0, sldiercolorpos[4] - 3, 0, -5)
 			slider3.Parent = slider1
 			slider3.Name = "ButtonSlider"
@@ -1773,8 +1773,8 @@ if shared.feftyExecuted then
 				hue = hue or 0.44
 				sat = sat or 0.7
 				val = val or 0.9
-				slider3.Image = (sliderapi["RainbowValue"] and downloadfeftyAsset("fefty/assets/ColorSlider2.png") or downloadfeftyAsset("fefty/assets/ColorSlider1.png"))
-				sliderrainbow.Image = (sliderapi["RainbowValue"] and downloadfeftyAsset("fefty/assets/RainbowIcon2.png") or downloadfeftyAsset("fefty/assets/RainbowIcon1.png"))
+				slider3.Image = (sliderapi["RainbowValue"] and downloadVapeAsset("vape/assets/ColorSlider2.png") or downloadVapeAsset("vape/assets/ColorSlider1.png"))
+				sliderrainbow.Image = (sliderapi["RainbowValue"] and downloadVapeAsset("vape/assets/RainbowIcon2.png") or downloadVapeAsset("vape/assets/RainbowIcon1.png"))
 				if sliderapi["RainbowValue"] then
 					val = math.clamp(val, min, max)
 					text2.BackgroundColor3 = Color3.fromHSV(hue, sat, val)
@@ -1810,13 +1810,13 @@ if shared.feftyExecuted then
 							else
 								coroutine.yield(heh)
 							end
-						until sliderapi["RainbowValue"] == false or shared.feftyExecuted == nil
+						until sliderapi["RainbowValue"] == false or shared.VapeExecuted == nil
 					end))
 				end
 			end
 			sliderrainbow.MouseButton1Click:Connect(function()
 				sliderapi["SetRainbow"](not sliderapi["RainbowValue"])
-				sliderrainbow.Image = (sliderapi["RainbowValue"] and downloadfeftyAsset("fefty/assets/RainbowIcon2.png") or downloadfeftyAsset("fefty/assets/RainbowIcon1.png"))
+				sliderrainbow.Image = (sliderapi["RainbowValue"] and downloadVapeAsset("vape/assets/RainbowIcon2.png") or downloadVapeAsset("vape/assets/RainbowIcon1.png"))
 			end)
 			slider1.MouseButton1Down:Connect(function()
 				local x,y,xscale,yscale,xscale2 = RelativeXY(slider1, inputService:GetMouseLocation())
@@ -1893,7 +1893,7 @@ if shared.feftyExecuted then
 			buttonarrow.Position = UDim2.new(0, 0, 1, -4)
 			buttonarrow.BackgroundTransparency = 1
 			buttonarrow.Name = "ToggleArrow"
-			buttonarrow.Image = downloadfeftyAsset("fefty/assets/ToggleArrow.png")
+			buttonarrow.Image = downloadVapeAsset("vape/assets/ToggleArrow.png")
 			buttonarrow.Visible = false
 			buttonarrow.Parent = buttontext
 			local toggleframe1 = Instance.new("Frame")
@@ -2001,7 +2001,7 @@ if shared.feftyExecuted then
 			arrow.BackgroundTransparency = 1
 			arrow.Name = "RightArrow"
 			arrow.Position = UDim2.new(1, -20, 0, 16)
-			arrow.Image = downloadfeftyAsset("fefty/assets/RightArrow.png")
+			arrow.Image = downloadVapeAsset("vape/assets/RightArrow.png")
 			arrow.Active = false
 			arrow.Parent = button
 			local buttonicon
@@ -2011,7 +2011,7 @@ if shared.feftyExecuted then
 				buttonicon.Size = UDim2.new(0, argstable["IconSize"] - 2, 0, 14)
 				buttonicon.BackgroundTransparency = 1
 				buttonicon.Position = UDim2.new(0, 10, 0, 13)
-				buttonicon.Image = downloadfeftyAsset(argstable["Icon"])
+				buttonicon.Image = downloadVapeAsset(argstable["Icon"])
 				buttonicon.Name = "ButtonIcon"
 				buttonicon.Parent = button
 			end
@@ -2086,7 +2086,7 @@ if shared.feftyExecuted then
 		local windowshadow = Instance.new("ImageLabel")
 		windowshadow.AnchorPoint = Vector2.new(0.5, 0.5)
 		windowshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-		windowshadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
+		windowshadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
 		windowshadow.BackgroundTransparency = 1
 		windowshadow.ZIndex = -1
 		windowshadow.Size = UDim2.new(1, 6, 1, 6)
@@ -2096,7 +2096,7 @@ if shared.feftyExecuted then
 		windowshadow.Parent = windowtitle
 		local windowicon = Instance.new("ImageLabel")
 		windowicon.Size = UDim2.new(0, argstablemain["IconSize"], 0, 16)
-		windowicon.Image = downloadfeftyAsset(argstablemain["Icon"])
+		windowicon.Image = downloadVapeAsset(argstablemain["Icon"])
 		windowicon.Name = "WindowIcon"
 		windowicon.BackgroundTransparency = 1
 		windowicon.Position = UDim2.new(0, 10, 0, 13)
@@ -2115,7 +2115,7 @@ if shared.feftyExecuted then
 		local expandbutton = Instance.new("ImageButton")
 		expandbutton.AutoButtonColor = false
 		expandbutton.Size = UDim2.new(0, 16, 0, 16)
-		expandbutton.Image = downloadfeftyAsset("fefty/assets/PinButton.png")
+		expandbutton.Image = downloadVapeAsset("vape/assets/PinButton.png")
 		expandbutton.ImageColor3 = Color3.fromRGB(84, 84, 84)
 		expandbutton.BackgroundTransparency = 1
 		expandbutton.Name = "PinButton" 
@@ -2127,7 +2127,7 @@ if shared.feftyExecuted then
 		optionsbutton.Position = UDim2.new(1, -16, 0, 11)
 		optionsbutton.Name = "OptionsButton"
 		optionsbutton.BackgroundTransparency = 1
-		optionsbutton.Image = downloadfeftyAsset("fefty/assets/MoreButton3.png")
+		optionsbutton.Image = downloadVapeAsset("vape/assets/MoreButton3.png")
 		optionsbutton.Parent = windowtitle
 		local children = Instance.new("Frame")
 		children.BackgroundTransparency = 1
@@ -2279,7 +2279,7 @@ if shared.feftyExecuted then
 			slider3.Size = UDim2.new(0, 24, 0, 16)
 			slider3.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
 			slider3.BorderSizePixel = 0
-			slider3.Image = downloadfeftyAsset("fefty/assets/SliderButton1.png")
+			slider3.Image = downloadVapeAsset("vape/assets/SliderButton1.png")
 			slider3.Position = UDim2.new(1, -11, 0, -7)
 			slider3.Parent = slider2
 			slider3.Name = "ButtonSlider"
@@ -2442,7 +2442,7 @@ if shared.feftyExecuted then
 			targeticon.Size = UDim2.new(0, 14, 0, 12)
 			targeticon.Position = UDim2.new(0, 12, 0, 14)
 			targeticon.BackgroundTransparency = 1
-			targeticon.Image = downloadfeftyAsset("fefty/assets/CircleList"..(argstablemain3["Type"] == "Blacklist" and "Blacklist" or "Whitelist")..".png")
+			targeticon.Image = downloadVapeAsset("vape/assets/CircleList"..(argstablemain3["Type"] == "Blacklist" and "Blacklist" or "Whitelist")..".png")
 			targeticon.ZIndex = 2
 			targeticon.Parent = drop1
 			local targettext = Instance.new("TextLabel")
@@ -2487,7 +2487,7 @@ if shared.feftyExecuted then
 			local windowshadow = Instance.new("ImageLabel")
 			windowshadow.AnchorPoint = Vector2.new(0.5, 0.5)
 			windowshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-			windowshadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
+			windowshadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
 			windowshadow.BackgroundTransparency = 1
 			windowshadow.ZIndex = -1
 			windowshadow.Size = UDim2.new(1, 6, 1, 6)
@@ -2497,7 +2497,7 @@ if shared.feftyExecuted then
 			windowshadow.Parent = windowtitle
 			local windowicon = Instance.new("ImageLabel")
 			windowicon.Size = UDim2.new(0, 18, 0, 16)
-			windowicon.Image = downloadfeftyAsset("fefty/assets/CircleList"..(argstablemain3["Type"] == "Blacklist" and "Blacklist" or "Whitelist")..".png")
+			windowicon.Image = downloadVapeAsset("vape/assets/CircleList"..(argstablemain3["Type"] == "Blacklist" and "Blacklist" or "Whitelist")..".png")
 			windowicon.ImageColor3 = Color3.fromRGB(200, 200, 200)
 			windowicon.ZIndex = 3
 			windowicon.Name = "WindowIcon"
@@ -2568,7 +2568,7 @@ if shared.feftyExecuted then
 				textboxbkg.Position = UDim2.new(0, 10, 0, 5)
 				textboxbkg.ZIndex = 6
 				textboxbkg.ClipsDescendants = true
-				textboxbkg.Image = downloadfeftyAsset((argstable["Name"] == "ProfilesList" and "fefty/assets/TextBoxBKG2.png" or "fefty/assets/TextBoxBKG.png"))
+				textboxbkg.Image = downloadVapeAsset((argstable["Name"] == "ProfilesList" and "vape/assets/TextBoxBKG2.png" or "vape/assets/TextBoxBKG.png"))
 				textboxbkg.Parent = frame
 				local textbox = Instance.new("TextBox")
 				textbox.Size = UDim2.new(0, 159, 1, 0)
@@ -2593,7 +2593,7 @@ if shared.feftyExecuted then
 				addbutton.AutoButtonColor = false
 				addbutton.Size = UDim2.new(0, 16, 0, 16)
 				addbutton.ImageColor3 = argstable["Color"]
-				addbutton.Image = downloadfeftyAsset("fefty/assets/AddItem.png")
+				addbutton.Image = downloadVapeAsset("vape/assets/AddItem.png")
 				addbutton.Parent = textboxbkg
 				local scrollframebkg = Instance.new("Frame")
 				scrollframebkg.ZIndex = 5
@@ -2700,7 +2700,7 @@ if shared.feftyExecuted then
 						deletebutton.BackgroundTransparency = 1
 						deletebutton.AutoButtonColor = false
 						deletebutton.ZIndex = 5
-						deletebutton.Image = downloadfeftyAsset("fefty/assets/AddRemoveIcon1.png")
+						deletebutton.Image = downloadVapeAsset("vape/assets/AddRemoveIcon1.png")
 						deletebutton.Position = UDim2.new(1, -16, 0, 14)
 						deletebutton.Parent = itemframe
 						deletebutton.MouseButton1Click:Connect(function()
@@ -2761,14 +2761,14 @@ if shared.feftyExecuted then
 				buttonimage.BackgroundTransparency = 1
 				buttonimage.Position = UDim2.new(0, 14, 0, 7)
 				buttonimage.Size = UDim2.new(0, argstable["IconSize"], 0, 16)
-				buttonimage.Image = downloadfeftyAsset(argstable["Icon"])
+				buttonimage.Image = downloadVapeAsset(argstable["Icon"])
 				buttonimage.ImageColor3 = Color3.fromRGB(121, 121, 121)
 				buttonimage.ZIndex = 5
 				buttonimage.Active = false
 				buttonimage.Parent = buttontext
 				local buttontexticon = Instance.new("ImageLabel")
 				buttontexticon.Size = UDim2.new(0, argstable["IconSize"] - 3, 0, 12)
-				buttontexticon.Image = downloadfeftyAsset(argstable["Icon"])
+				buttontexticon.Image = downloadVapeAsset(argstable["Icon"])
 				buttontexticon.LayoutOrder = amount
 				buttontexticon.ZIndex = 4
 				buttontexticon.BackgroundTransparency = 1
@@ -2865,7 +2865,7 @@ if shared.feftyExecuted then
 			local expandbutton2 = Instance.new("ImageLabel")
 			expandbutton2.Active = false
 			expandbutton2.Size = UDim2.new(0, 9, 0, 4)
-			expandbutton2.Image = downloadfeftyAsset("fefty/assets/DownArrow.png")
+			expandbutton2.Image = downloadVapeAsset("vape/assets/DownArrow.png")
 			expandbutton2.ZIndex = 5
 			expandbutton2.Position = UDim2.new(1, -19, 1, -16)
 			expandbutton2.Name = "ExpandButton2"
@@ -2881,7 +2881,7 @@ if shared.feftyExecuted then
 			drop1:GetPropertyChangedSignal("Text"):Connect(function()
 				drop2.Text = drop1.Text
 			end)
-			drop2.ExpandButton2.Image = downloadfeftyAsset("fefty/assets/UpArrow.png")
+			drop2.ExpandButton2.Image = downloadVapeAsset("vape/assets/UpArrow.png")
 			local thing = Instance.new("Frame")
 			thing.Size = UDim2.new(1, 2, 1, 2)
 			thing.BorderSizePixel = 0
@@ -3056,7 +3056,7 @@ if shared.feftyExecuted then
 			slider3.Size = UDim2.new(0, 24, 0, 16)
 			slider3.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
 			slider3.BorderSizePixel = 0
-			slider3.Image = downloadfeftyAsset("fefty/assets/SliderButton1.png")
+			slider3.Image = downloadVapeAsset("vape/assets/SliderButton1.png")
 			slider3.Position = UDim2.new(0.44, -11, 0, -7)
 			slider3.Parent = slider1
 			slider3.Name = "ButtonSlider"
@@ -3082,7 +3082,7 @@ if shared.feftyExecuted then
 							else
 								coroutine.yield(heh)
 							end
-						until sliderapi["RainbowValue"] == false or shared.feftyExecuted == nil
+						until sliderapi["RainbowValue"] == false or shared.VapeExecuted == nil
 					end))
 				end
 			end
@@ -3186,7 +3186,7 @@ if shared.feftyExecuted then
 			buttonarrow.Position = UDim2.new(0, 0, 1, -4)
 			buttonarrow.BackgroundTransparency = 1
 			buttonarrow.Name = "ToggleArrow"
-			buttonarrow.Image = downloadfeftyAsset("fefty/assets/ToggleArrow.png")
+			buttonarrow.Image = downloadVapeAsset("vape/assets/ToggleArrow.png")
 			buttonarrow.Visible = false
 			buttonarrow.Parent = buttontext
 			local toggleframe1 = Instance.new("Frame")
@@ -3305,7 +3305,7 @@ if shared.feftyExecuted then
 		local windowshadow = Instance.new("ImageLabel")
 		windowshadow.AnchorPoint = Vector2.new(0.5, 0.5)
 		windowshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-		windowshadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
+		windowshadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
 		windowshadow.BackgroundTransparency = 1
 		windowshadow.ZIndex = -1
 		windowshadow.Size = UDim2.new(1, 6, 1, 6)
@@ -3315,7 +3315,7 @@ if shared.feftyExecuted then
 		windowshadow.Parent = windowtitle
 		local windowicon = Instance.new("ImageLabel")
 		windowicon.Size = UDim2.new(0, argstablemain2["IconSize"], 0, 16)
-		windowicon.Image = downloadfeftyAsset(argstablemain2["Icon"])
+		windowicon.Image = downloadVapeAsset(argstablemain2["Icon"])
 		windowicon.Name = "WindowIcon"
 		windowicon.BackgroundTransparency = 1
 		windowicon.Position = UDim2.new(0, 10, 0, 13)
@@ -3331,7 +3331,7 @@ if shared.feftyExecuted then
 				currentexpandedbutton["ExpandToggle"]()
 			end
 		end)
-		windowbackbutton.Image = downloadfeftyAsset("fefty/assets/BackIcon.png")
+		windowbackbutton.Image = downloadVapeAsset("vape/assets/BackIcon.png")
 		windowbackbutton.Parent = windowtitle
 		local windowtext = Instance.new("TextLabel")
 		windowtext.Size = UDim2.new(0, 155, 0, 41)
@@ -3356,7 +3356,7 @@ if shared.feftyExecuted then
 		local expandbutton2 = Instance.new("ImageLabel")
 		expandbutton2.Active = false
 		expandbutton2.Size = UDim2.new(0, 9, 0, 4)
-		expandbutton2.Image = downloadfeftyAsset("fefty/assets/UpArrow.png")
+		expandbutton2.Image = downloadVapeAsset("vape/assets/UpArrow.png")
 		expandbutton2.Position = UDim2.new(0, 8, 0, 6)
 		expandbutton2.Name = "ExpandButton2"
 		expandbutton2.BackgroundTransparency = 1
@@ -3396,11 +3396,11 @@ if shared.feftyExecuted then
 			if noexpand == false then
 				children.Visible = not children.Visible
 				if children.Visible then
-					expandbutton2.Image = downloadfeftyAsset("fefty/assets/DownArrow.png")
+					expandbutton2.Image = downloadVapeAsset("vape/assets/DownArrow.png")
 					windowtitle.Size = UDim2.new(0, 220, 0, math.clamp(45 + uilistlayout.AbsoluteContentSize.Y * (1 / GuiLibrary["MainRescale"].Scale), 0, 605))
 					children.CanvasSize = UDim2.new(0, 0, 0, uilistlayout.AbsoluteContentSize.Y * (1 / GuiLibrary["MainRescale"].Scale))
 				else
-					expandbutton2.Image = downloadfeftyAsset("fefty/assets/UpArrow.png")
+					expandbutton2.Image = downloadVapeAsset("vape/assets/UpArrow.png")
 					windowtitle.Size = UDim2.new(0, 220, 0, 41)
 				end
 			end
@@ -3436,7 +3436,7 @@ if shared.feftyExecuted then
 			button2.Size = UDim2.new(0, 10, 0, 20)
 			button2.Position = UDim2.new(1, -24, 0, 10)
 			button2.Name = "OptionsButton"
-			button2.Image = downloadfeftyAsset("fefty/assets/MoreButton1.png")
+			button2.Image = downloadVapeAsset("vape/assets/MoreButton1.png")
 			button2.Parent = button
 			local buttontext = Instance.new("TextLabel")
 			buttontext.BackgroundTransparency = 1
@@ -3485,7 +3485,7 @@ if shared.feftyExecuted then
 			bindbkg2.TextColor3 = Color3.fromRGB(88, 88, 88)
 			bindbkg2.Parent = button
 			local bindimg = Instance.new("ImageLabel")
-			bindimg.Image = downloadfeftyAsset("fefty/assets/KeybindIcon.png")
+			bindimg.Image = downloadVapeAsset("vape/assets/KeybindIcon.png")
 			bindimg.BackgroundTransparency = 1
 			bindimg.ImageColor3 = Color3.fromRGB(88, 88, 88)
 			bindimg.Size = UDim2.new(0, 12, 0, 12)
@@ -3504,7 +3504,7 @@ if shared.feftyExecuted then
 			bindtext.Visible = false
 			local bindtext2 = Instance.new("ImageLabel")
 			bindtext2.Size = UDim2.new(0, 156, 0, 39)
-			bindtext2.Image = downloadfeftyAsset("fefty/assets/BindBackground.png")
+			bindtext2.Image = downloadVapeAsset("vape/assets/BindBackground.png")
 			bindtext2.BackgroundTransparency = 1
 			bindtext2.ScaleType = Enum.ScaleType.Slice
 			bindtext2.SliceCenter = Rect.new(0, 0, 140, 40)
@@ -3574,7 +3574,7 @@ if shared.feftyExecuted then
 					button.BackgroundColor3 = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"]["Api"]["Hue"], GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"]["Api"]["Sat"], GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"]["Api"]["Value"])
 					currenttween:Cancel()
 					buttonactiveborder.Visible = true
-					button2.Image = downloadfeftyAsset("fefty/assets/MoreButton2.png")
+					button2.Image = downloadVapeAsset("vape/assets/MoreButton2.png")
 					buttontext.TextColor3 = Color3.new(0, 0, 0)
 					bindbkg.BackgroundTransparency = 0.9
 					bindtext.TextColor3 = Color3.fromRGB(45, 45, 45)
@@ -3587,7 +3587,7 @@ if shared.feftyExecuted then
 					table.clear(buttonapi.Connections)
 					button.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
 					buttonactiveborder.Visible = false
-					button2.Image = downloadfeftyAsset("fefty/assets/MoreButton1.png")
+					button2.Image = downloadVapeAsset("vape/assets/MoreButton1.png")
 					buttontext.TextColor3 = Color3.fromRGB(162, 162, 162)
 					bindbkg.BackgroundTransparency = 0.95
 					bindtext.TextColor3 = Color3.fromRGB(88, 88, 88)
@@ -3646,7 +3646,7 @@ if shared.feftyExecuted then
 				textboxbkg.Size = UDim2.new(0, 200, 0, 31)
 				textboxbkg.Position = UDim2.new(0, 10, 0, 5)
 				textboxbkg.ClipsDescendants = true
-				textboxbkg.Image = downloadfeftyAsset("fefty/assets/TextBoxBKG.png")
+				textboxbkg.Image = downloadVapeAsset("vape/assets/TextBoxBKG.png")
 				textboxbkg.Parent = frame
 				local textbox = Instance.new("TextBox")
 				textbox.Size = UDim2.new(0, 159, 1, 0)
@@ -3669,7 +3669,7 @@ if shared.feftyExecuted then
 				addbutton.AutoButtonColor = false
 				addbutton.Size = UDim2.new(0, 16, 0, 16)
 				addbutton.ImageColor3 = Color3.fromHSV(0.44, 1, 1)
-				addbutton.Image = downloadfeftyAsset("fefty/assets/AddItem.png")
+				addbutton.Image = downloadVapeAsset("vape/assets/AddItem.png")
 				addbutton.Parent = textboxbkg
 				local scrollframebkg = Instance.new("Frame")
 				scrollframebkg.ZIndex = 2
@@ -3734,7 +3734,7 @@ if shared.feftyExecuted then
 						deletebutton.BackgroundTransparency = 1
 						deletebutton.AutoButtonColor = false
 						deletebutton.ZIndex = 1
-						deletebutton.Image = downloadfeftyAsset("fefty/assets/AddRemoveIcon1.png")
+						deletebutton.Image = downloadVapeAsset("vape/assets/AddRemoveIcon1.png")
 						deletebutton.Position = UDim2.new(1, -16, 0, 14)
 						deletebutton.Parent = itemframe
 						deletebutton.MouseButton1Click:Connect(function()
@@ -3787,7 +3787,7 @@ if shared.feftyExecuted then
 				textboxbkg.Size = UDim2.new(0, 200, 0, 31)
 				textboxbkg.Position = UDim2.new(0, 10, 0, 5)
 				textboxbkg.ClipsDescendants = true
-				textboxbkg.Image = downloadfeftyAsset("fefty/assets/TextBoxBKG.png")
+				textboxbkg.Image = downloadVapeAsset("vape/assets/TextBoxBKG.png")
 				textboxbkg.Parent = frame
 				local textbox = Instance.new("TextBox")
 				textbox.Size = UDim2.new(0, 159, 1, 0)
@@ -3899,7 +3899,7 @@ if shared.feftyExecuted then
 				local windowshadow = Instance.new("ImageLabel")
 				windowshadow.AnchorPoint = Vector2.new(0.5, 0.5)
 				windowshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-				windowshadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
+				windowshadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
 				windowshadow.BackgroundTransparency = 1
 				windowshadow.ZIndex = -1
 				windowshadow.Size = UDim2.new(1, 6, 1, 6)
@@ -3909,7 +3909,7 @@ if shared.feftyExecuted then
 				windowshadow.Parent = windowtitle
 				local windowicon = Instance.new("ImageLabel")
 				windowicon.Size = UDim2.new(0, 18, 0, 16)
-				windowicon.Image = downloadfeftyAsset("fefty/assets/TargetIcon.png")
+				windowicon.Image = downloadVapeAsset("vape/assets/TargetIcon.png")
 				windowicon.ImageColor3 = Color3.fromRGB(200, 200, 200)
 				windowicon.ZIndex = 3
 				windowicon.Name = "WindowIcon"
@@ -3987,7 +3987,7 @@ if shared.feftyExecuted then
 					buttonarrow.BackgroundTransparency = 1
 					buttonarrow.Name = "ToggleArrow"
 					buttonarrow.ZIndex = 3
-					buttonarrow.Image = downloadfeftyAsset("fefty/assets/ToggleArrow.png")
+					buttonarrow.Image = downloadVapeAsset("vape/assets/ToggleArrow.png")
 					buttonarrow.Visible = false
 					buttonarrow.Parent = buttontext
 					local toggleframe1 = Instance.new("Frame")
@@ -4094,14 +4094,14 @@ if shared.feftyExecuted then
 					buttonimage.BackgroundTransparency = 1
 					buttonimage.Position = UDim2.new(0, 14, 0, 7)
 					buttonimage.Size = UDim2.new(0, argstable["IconSize"], 0, 16)
-					buttonimage.Image = downloadfeftyAsset(argstable["Icon"])
+					buttonimage.Image = downloadVapeAsset(argstable["Icon"])
 					buttonimage.ImageColor3 = Color3.fromRGB(121, 121, 121)
 					buttonimage.ZIndex = 5
 					buttonimage.Active = false
 					buttonimage.Parent = buttontext
 					local buttontexticon = Instance.new("ImageLabel")
 					buttontexticon.Size = UDim2.new(0, argstable["IconSize"] - 3, 0, 12)
-					buttontexticon.Image = downloadfeftyAsset(argstable["Icon"])
+					buttontexticon.Image = downloadVapeAsset(argstable["Icon"])
 					buttontexticon.LayoutOrder = amount
 					buttontexticon.ZIndex = 4
 					buttontexticon.BackgroundTransparency = 1
@@ -4147,7 +4147,7 @@ if shared.feftyExecuted then
 				buttonreturned["Players"] = windowapi["CreateButton"]({
 					["Name"] = "PlayersIcon",
 					["Position"] = UDim2.new(0, 11, 0, 6),
-					["Icon"] = "fefty/assets/TargetIcon1.png",
+					["Icon"] = "vape/assets/TargetIcon1.png",
 					["IconSize"] = 15,
 					["Function"] = function() end,
 					["Default"] = true
@@ -4155,7 +4155,7 @@ if shared.feftyExecuted then
 				buttonreturned["NPCs"] = windowapi["CreateButton"]({
 					["Name"] = "NPCsIcon",
 					["Position"] = UDim2.new(0, 62, 0, 6),
-					["Icon"] = "fefty/assets/TargetIcon2.png",
+					["Icon"] = "vape/assets/TargetIcon2.png",
 					["IconSize"] = 12,
 					["Function"] = function() end,
 					["Default"] = false
@@ -4163,7 +4163,7 @@ if shared.feftyExecuted then
 				buttonreturned["Peaceful"] = windowapi["CreateButton"]({
 					["Name"] = "PeacefulIcon",
 					["Position"] = UDim2.new(0, 113, 0, 6),
-					["Icon"] = "fefty/assets/TargetIcon3.png",
+					["Icon"] = "vape/assets/TargetIcon3.png",
 					["IconSize"] = 16,
 					["Function"] = function() end,
 					["Default"] = false
@@ -4171,7 +4171,7 @@ if shared.feftyExecuted then
 				buttonreturned["Neutral"] = windowapi["CreateButton"]({
 					["Name"] = "NeutralIcon",
 					["Position"] = UDim2.new(0, 164, 0, 6),
-					["Icon"] = "fefty/assets/TargetIcon4.png",
+					["Icon"] = "vape/assets/TargetIcon4.png",
 					["IconSize"] = 19,
 					["Function"] = function() end,
 					["Default"] = false
@@ -4241,7 +4241,7 @@ if shared.feftyExecuted then
 				targeticon.Size = UDim2.new(0, 14, 0, 12)
 				targeticon.Position = UDim2.new(0, 12, 0, 14)
 				targeticon.BackgroundTransparency = 1
-				targeticon.Image = downloadfeftyAsset("fefty/assets/CircleList"..(argstablemain3["Type"] == "Blacklist" and "Blacklist" or "Whitelist")..".png")
+				targeticon.Image = downloadVapeAsset("vape/assets/CircleList"..(argstablemain3["Type"] == "Blacklist" and "Blacklist" or "Whitelist")..".png")
 				targeticon.ZIndex = 2
 				targeticon.Parent = drop1
 				local targettext = Instance.new("TextLabel")
@@ -4286,7 +4286,7 @@ if shared.feftyExecuted then
 				local windowshadow = Instance.new("ImageLabel")
 				windowshadow.AnchorPoint = Vector2.new(0.5, 0.5)
 				windowshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-				windowshadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
+				windowshadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
 				windowshadow.BackgroundTransparency = 1
 				windowshadow.ZIndex = -1
 				windowshadow.Size = UDim2.new(1, 6, 1, 6)
@@ -4296,7 +4296,7 @@ if shared.feftyExecuted then
 				windowshadow.Parent = windowtitle
 				local windowicon = Instance.new("ImageLabel")
 				windowicon.Size = UDim2.new(0, 18, 0, 16)
-				windowicon.Image = downloadfeftyAsset("fefty/assets/CircleList"..(argstablemain3["Type"] == "Blacklist" and "Blacklist" or "Whitelist")..".png")
+				windowicon.Image = downloadVapeAsset("vape/assets/CircleList"..(argstablemain3["Type"] == "Blacklist" and "Blacklist" or "Whitelist")..".png")
 				windowicon.ImageColor3 = Color3.fromRGB(200, 200, 200)
 				windowicon.ZIndex = 3
 				windowicon.Name = "WindowIcon"
@@ -4367,7 +4367,7 @@ if shared.feftyExecuted then
 					textboxbkg.Position = UDim2.new(0, 10, 0, 5)
 					textboxbkg.ZIndex = 6
 					textboxbkg.ClipsDescendants = true
-					textboxbkg.Image = downloadfeftyAsset((argstable["Name"] == "ProfilesList" and "fefty/assets/TextBoxBKG2.png" or "fefty/assets/TextBoxBKG.png"))
+					textboxbkg.Image = downloadVapeAsset((argstable["Name"] == "ProfilesList" and "vape/assets/TextBoxBKG2.png" or "vape/assets/TextBoxBKG.png"))
 					textboxbkg.Parent = frame
 					local textbox = Instance.new("TextBox")
 					textbox.Size = UDim2.new(0, 159, 1, 0)
@@ -4392,7 +4392,7 @@ if shared.feftyExecuted then
 					addbutton.AutoButtonColor = false
 					addbutton.Size = UDim2.new(0, 16, 0, 16)
 					addbutton.ImageColor3 = argstable["Color"]
-					addbutton.Image = downloadfeftyAsset("fefty/assets/AddItem.png")
+					addbutton.Image = downloadVapeAsset("vape/assets/AddItem.png")
 					addbutton.Parent = textboxbkg
 					local scrollframebkg = Instance.new("Frame")
 					scrollframebkg.ZIndex = 5
@@ -4499,7 +4499,7 @@ if shared.feftyExecuted then
 							deletebutton.BackgroundTransparency = 1
 							deletebutton.AutoButtonColor = false
 							deletebutton.ZIndex = 5
-							deletebutton.Image = downloadfeftyAsset("fefty/assets/AddRemoveIcon1.png")
+							deletebutton.Image = downloadVapeAsset("vape/assets/AddRemoveIcon1.png")
 							deletebutton.Position = UDim2.new(1, -16, 0, 14)
 							deletebutton.Parent = itemframe
 							deletebutton.MouseButton1Click:Connect(function()
@@ -4560,14 +4560,14 @@ if shared.feftyExecuted then
 					buttonimage.BackgroundTransparency = 1
 					buttonimage.Position = UDim2.new(0, 14, 0, 7)
 					buttonimage.Size = UDim2.new(0, argstable["IconSize"], 0, 16)
-					buttonimage.Image = downloadfeftyAsset(argstable["Icon"])
+					buttonimage.Image = downloadVapeAsset(argstable["Icon"])
 					buttonimage.ImageColor3 = Color3.fromRGB(121, 121, 121)
 					buttonimage.ZIndex = 5
 					buttonimage.Active = false
 					buttonimage.Parent = buttontext
 					local buttontexticon = Instance.new("ImageLabel")
 					buttontexticon.Size = UDim2.new(0, argstable["IconSize"] - 3, 0, 12)
-					buttontexticon.Image = downloadfeftyAsset(argstable["Icon"])
+					buttontexticon.Image = downloadVapeAsset(argstable["Icon"])
 					buttontexticon.LayoutOrder = amount
 					buttontexticon.ZIndex = 4
 					buttontexticon.BackgroundTransparency = 1
@@ -4664,7 +4664,7 @@ if shared.feftyExecuted then
 				local expandbutton2 = Instance.new("ImageLabel")
 				expandbutton2.Active = false
 				expandbutton2.Size = UDim2.new(0, 9, 0, 4)
-				expandbutton2.Image = downloadfeftyAsset("fefty/assets/DownArrow.png")
+				expandbutton2.Image = downloadVapeAsset("vape/assets/DownArrow.png")
 				expandbutton2.ZIndex = 5
 				expandbutton2.Position = UDim2.new(1, -19, 1, -16)
 				expandbutton2.Name = "ExpandButton2"
@@ -4680,7 +4680,7 @@ if shared.feftyExecuted then
 				drop1:GetPropertyChangedSignal("Text"):Connect(function()
 					drop2.Text = drop1.Text
 				end)
-				drop2.ExpandButton2.Image = downloadfeftyAsset("fefty/assets/UpArrow.png")
+				drop2.ExpandButton2.Image = downloadVapeAsset("vape/assets/UpArrow.png")
 				drop2.ExpandButton2.ZIndex = 10
 				local thing = Instance.new("Frame")
 				thing.Size = UDim2.new(1, 2, 1, 2)
@@ -4863,7 +4863,7 @@ if shared.feftyExecuted then
 				slider3.Size = UDim2.new(0, 24, 0, 16)
 				slider3.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 				slider3.BorderSizePixel = 0
-				slider3.Image = downloadfeftyAsset("fefty/assets/SliderButton1.png")
+				slider3.Image = downloadVapeAsset("vape/assets/SliderButton1.png")
 				slider3.Position = UDim2.new(0.44, -11, 0, -7)
 				slider3.Parent = slider1
 				slider3.Name = "ButtonSlider"
@@ -4894,13 +4894,13 @@ if shared.feftyExecuted then
 				sliderexpand.Size = UDim2.new(0, 15, 0, 15)
 				sliderexpand.BackgroundTransparency = 1
 				sliderexpand.Position = UDim2.new(0, textService:GetTextSize(text1.Text, text1.TextSize, text1.Font, Vector2.new(10000, 100000)).X + 3, 0, 6)
-				sliderexpand.Image = downloadfeftyAsset("fefty/assets/HoverArrow3.png")
+				sliderexpand.Image = downloadVapeAsset("vape/assets/HoverArrow3.png")
 				sliderexpand.Parent = frame
 				sliderexpand.MouseEnter:Connect(function()
-					sliderexpand.Image = downloadfeftyAsset("fefty/assets/HoverArrow4.png")
+					sliderexpand.Image = downloadVapeAsset("vape/assets/HoverArrow4.png")
 				end)
 				sliderexpand.MouseLeave:Connect(function()
-					sliderexpand.Image = downloadfeftyAsset("fefty/assets/HoverArrow3.png")
+					sliderexpand.Image = downloadVapeAsset("vape/assets/HoverArrow3.png")
 				end)
 				sliderexpand.MouseButton1Click:Connect(function()
 					local val = not slidersat.Visible
@@ -4940,7 +4940,7 @@ if shared.feftyExecuted then
 								else
 									coroutine.yield(heh)
 								end
-							until sliderapi["RainbowValue"] == false or shared.feftyExecuted == nil
+							until sliderapi["RainbowValue"] == false or shared.VapeExecuted == nil
 						end))
 					end
 				end
@@ -5088,7 +5088,7 @@ if shared.feftyExecuted then
 				slider3.Size = UDim2.new(0, 24, 0, 16)
 				slider3.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 				slider3.BorderSizePixel = 0
-				slider3.Image = downloadfeftyAsset("fefty/assets/SliderButton1.png")
+				slider3.Image = downloadVapeAsset("vape/assets/SliderButton1.png")
 				slider3.Position = UDim2.new(1, -11, 0, -7)
 				slider3.Parent = slider2
 				slider3.Name = "ButtonSlider"
@@ -5212,7 +5212,7 @@ if shared.feftyExecuted then
 				text3.Parent = frame
 				local text4 = Instance.new("ImageLabel")
 				text4.Size = UDim2.new(0, 12, 0, 6)
-				text4.Image = downloadfeftyAsset("fefty/assets/SliderArrowSeperator.png")
+				text4.Image = downloadVapeAsset("vape/assets/SliderArrowSeperator.png")
 				text4.BackgroundTransparency = 1
 				text4.Position = UDim2.new(0, 154, 0, 10)
 				text4.Parent = frame
@@ -5234,7 +5234,7 @@ if shared.feftyExecuted then
 				slider3.Size = UDim2.new(0, 15, 0, 16)
 				slider3.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
 				slider3.BorderSizePixel = 0
-				slider3.Image = downloadfeftyAsset("fefty/assets/SliderArrow1.png")
+				slider3.Image = downloadVapeAsset("vape/assets/SliderArrow1.png")
 				slider3.Position = UDim2.new(1, -7, 1, -9)
 				slider3.Parent = slider1
 				slider3.Name = "ButtonSlider"
@@ -5349,7 +5349,7 @@ if shared.feftyExecuted then
 				buttonarrow.Position = UDim2.new(0, 0, 1, -4)
 				buttonarrow.BackgroundTransparency = 1
 				buttonarrow.Name = "ToggleArrow"
-				buttonarrow.Image = downloadfeftyAsset("fefty/assets/ToggleArrow.png")
+				buttonarrow.Image = downloadVapeAsset("vape/assets/ToggleArrow.png")
 				buttonarrow.Visible = false
 				buttonarrow.Parent = buttontext
 				local toggleframe1 = Instance.new("Frame")
@@ -5489,14 +5489,14 @@ if shared.feftyExecuted then
 				end
 			end)
 			bindbkg.MouseEnter:Connect(function() 
-				bindimg.Image = downloadfeftyAsset("fefty/assets/PencilIcon.png") 
+				bindimg.Image = downloadVapeAsset("vape/assets/PencilIcon.png") 
 				bindimg.Visible = true
 				bindtext.Visible = false
 				bindbkg.Size = UDim2.new(0, 20, 0, 21)
 				bindbkg.Position = UDim2.new(1, -56, 0, 9)
 			end)
 			bindbkg.MouseLeave:Connect(function() 
-				bindimg.Image = downloadfeftyAsset("fefty/assets/KeybindIcon.png")
+				bindimg.Image = downloadVapeAsset("vape/assets/KeybindIcon.png")
 				if buttonapi["Keybind"] ~= "" then
 					bindimg.Visible = false
 					bindtext.Visible = true
@@ -5554,7 +5554,7 @@ if shared.feftyExecuted then
 		local windowshadow = Instance.new("ImageLabel")
 		windowshadow.AnchorPoint = Vector2.new(0.5, 0.5)
 		windowshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-		windowshadow.Image = downloadfeftyAsset("fefty/assets/WindowBlur.png")
+		windowshadow.Image = downloadVapeAsset("vape/assets/WindowBlur.png")
 		windowshadow.BackgroundTransparency = 1
 		windowshadow.ZIndex = -1
 		windowshadow.Size = UDim2.new(1, 6, 1, 6)
@@ -5564,7 +5564,7 @@ if shared.feftyExecuted then
 		windowshadow.Parent = windowtitle
 		local windowicon = Instance.new("ImageLabel")
 		windowicon.Size = UDim2.new(0, argstablemain["IconSize"], 0, 16)
-		windowicon.Image = downloadfeftyAsset(argstablemain["Icon"])
+		windowicon.Image = downloadVapeAsset(argstablemain["Icon"])
 		windowicon.ImageColor3 = Color3.fromRGB(200, 200, 200)
 		windowicon.Name = "WindowIcon"
 		windowicon.BackgroundTransparency = 1
@@ -5593,7 +5593,7 @@ if shared.feftyExecuted then
 		local expandbutton2 = Instance.new("ImageLabel")
 		expandbutton2.Active = false
 		expandbutton2.Size = UDim2.new(0, 9, 0, 4)
-		expandbutton2.Image = downloadfeftyAsset("fefty/assets/UpArrow.png")
+		expandbutton2.Image = downloadVapeAsset("vape/assets/UpArrow.png")
 		expandbutton2.Position = UDim2.new(0, 8, 0, 6)
 		expandbutton2.Name = "ExpandButton2"
 		expandbutton2.BackgroundTransparency = 1
@@ -5601,7 +5601,7 @@ if shared.feftyExecuted then
 		local settingsbutton = Instance.new("ImageButton")
 		settingsbutton.Active = true
 		settingsbutton.Size = UDim2.new(0, 16, 0, 16)
-		settingsbutton.Image = downloadfeftyAsset("fefty/assets/SettingsWheel2.png")
+		settingsbutton.Image = downloadVapeAsset("vape/assets/SettingsWheel2.png")
 		settingsbutton.Position = UDim2.new(1, -53, 0, 13)
 		settingsbutton.Name = "OptionsButton"
 		settingsbutton.BackgroundTransparency = 1
@@ -5648,10 +5648,10 @@ if shared.feftyExecuted then
 				children.Visible = not children.Visible
 				children2.Visible = false
 				if children.Visible then
-					expandbutton2.Image = downloadfeftyAsset("fefty/assets/DownArrow.png")
+					expandbutton2.Image = downloadVapeAsset("vape/assets/DownArrow.png")
 					windowtitle.Size = UDim2.new(0, 220, 0, 45 + uilistlayout.AbsoluteContentSize.Y)
 				else
-					expandbutton2.Image = downloadfeftyAsset("fefty/assets/UpArrow.png")
+					expandbutton2.Image = downloadVapeAsset("vape/assets/UpArrow.png")
 					windowtitle.Size = UDim2.new(0, 220, 0, 41)
 				end
 			end
@@ -5722,7 +5722,7 @@ if shared.feftyExecuted then
 			slider3.Size = UDim2.new(0, 24, 0, 16)
 			slider3.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
 			slider3.BorderSizePixel = 0
-			slider3.Image = downloadfeftyAsset("fefty/assets/SliderButton1.png")
+			slider3.Image = downloadVapeAsset("vape/assets/SliderButton1.png")
 			slider3.Position = UDim2.new(0.44, -11, 0, -7)
 			slider3.Parent = slider1
 			slider3.Name = "ButtonSlider"
@@ -5753,13 +5753,13 @@ if shared.feftyExecuted then
 			sliderexpand.Size = UDim2.new(0, 15, 0, 15)
 			sliderexpand.BackgroundTransparency = 1
 			sliderexpand.Position = UDim2.new(0, textService:GetTextSize(text1.Text, text1.TextSize, text1.Font, Vector2.new(10000, 100000)).X + 3, 0, 6)
-			sliderexpand.Image = downloadfeftyAsset("fefty/assets/HoverArrow.png")
+			sliderexpand.Image = downloadVapeAsset("vape/assets/HoverArrow.png")
 			sliderexpand.Parent = frame
 			sliderexpand.MouseEnter:Connect(function()
-				sliderexpand.Image = downloadfeftyAsset("fefty/assets/HoverArrow2.png")
+				sliderexpand.Image = downloadVapeAsset("vape/assets/HoverArrow2.png")
 			end)
 			sliderexpand.MouseLeave:Connect(function()
-				sliderexpand.Image = downloadfeftyAsset("fefty/assets/HoverArrow.png")
+				sliderexpand.Image = downloadVapeAsset("vape/assets/HoverArrow.png")
 			end)
 			sliderexpand.MouseButton1Click:Connect(function()
 				local val = not slidersat.Visible
@@ -5799,7 +5799,7 @@ if shared.feftyExecuted then
 							else
 								coroutine.yield(heh)
 							end
-						until sliderapi["RainbowValue"] == false or shared.feftyExecuted == nil
+						until sliderapi["RainbowValue"] == false or shared.VapeExecuted == nil
 					end))
 				end
 			end
@@ -5896,7 +5896,7 @@ if shared.feftyExecuted then
 			buttonarrow.Position = UDim2.new(0, 0, 1, -4)
 			buttonarrow.BackgroundTransparency = 1
 			buttonarrow.Name = "ToggleArrow"
-			buttonarrow.Image = downloadfeftyAsset("fefty/assets/ToggleArrow.png")
+			buttonarrow.Image = downloadVapeAsset("vape/assets/ToggleArrow.png")
 			buttonarrow.Visible = false
 			buttonarrow.Parent = buttontext
 			local toggleframe1 = Instance.new("Frame")
@@ -5991,7 +5991,7 @@ if shared.feftyExecuted then
 			textboxbkg.Size = UDim2.new(0, (argstable["Name"] == "ProfilesList" and 150 or 200), 0, 31)
 			textboxbkg.Position = UDim2.new(0, 10, 0, 5)
 			textboxbkg.ClipsDescendants = true
-			textboxbkg.Image = downloadfeftyAsset((argstable["Name"] == "ProfilesList" and "fefty/assets/TextBoxBKG2.png" or "fefty/assets/TextBoxBKG.png"))
+			textboxbkg.Image = downloadVapeAsset((argstable["Name"] == "ProfilesList" and "vape/assets/TextBoxBKG2.png" or "vape/assets/TextBoxBKG.png"))
 			textboxbkg.Parent = frame
 			local textbox = Instance.new("TextBox")
 			textbox.Size = UDim2.new(0, 159, 1, 0)
@@ -6014,7 +6014,7 @@ if shared.feftyExecuted then
 			addbutton.AutoButtonColor = false
 			addbutton.Size = UDim2.new(0, 16, 0, 16)
 			addbutton.ImageColor3 = Color3.fromHSV(0.44, 1, 1)
-			addbutton.Image = downloadfeftyAsset("fefty/assets/AddItem.png")
+			addbutton.Image = downloadVapeAsset("vape/assets/AddItem.png")
 			addbutton.Parent = textboxbkg
 			local scrollframebkg = Instance.new("Frame")
 			scrollframebkg.ZIndex = 2
@@ -6077,7 +6077,7 @@ if shared.feftyExecuted then
 					deletebutton.BackgroundTransparency = 1
 					deletebutton.AutoButtonColor = false
 					deletebutton.ZIndex = 1
-					deletebutton.Image = downloadfeftyAsset("fefty/assets/AddRemoveIcon1.png")
+					deletebutton.Image = downloadVapeAsset("vape/assets/AddRemoveIcon1.png")
 					deletebutton.Position = UDim2.new(1, -16, 0, 14)
 					deletebutton.Parent = itemframe
 					deletebutton.MouseButton1Click:Connect(function()
@@ -6131,7 +6131,7 @@ if shared.feftyExecuted then
 			textboxbkg.Size = UDim2.new(0, (argstable["Name"] == "ProfilesList" and 150 or 200), 0, 31)
 			textboxbkg.Position = UDim2.new(0, 10, 0, 5)
 			textboxbkg.ClipsDescendants = true
-			textboxbkg.Image = downloadfeftyAsset((argstable["Name"] == "ProfilesList" and "fefty/assets/TextBoxBKG2.png" or "fefty/assets/TextBoxBKG.png"))
+			textboxbkg.Image = downloadVapeAsset((argstable["Name"] == "ProfilesList" and "vape/assets/TextBoxBKG2.png" or "vape/assets/TextBoxBKG.png"))
 			textboxbkg.Parent = frame
 			local textbox = Instance.new("TextBox")
 			textbox.Size = UDim2.new(0, 159, 1, 0)
@@ -6154,7 +6154,7 @@ if shared.feftyExecuted then
 			addbutton.AutoButtonColor = false
 			addbutton.Size = UDim2.new(0, 16, 0, 16)
 			addbutton.ImageColor3 = argstable["Color"]
-			addbutton.Image = downloadfeftyAsset("fefty/assets/AddItem.png")
+			addbutton.Image = downloadVapeAsset("vape/assets/AddItem.png")
 			addbutton.Parent = textboxbkg
 			local scrollframebkg = Instance.new("Frame")
 			scrollframebkg.ZIndex = 2
@@ -6257,7 +6257,7 @@ if shared.feftyExecuted then
 					deletebutton.BackgroundTransparency = 1
 					deletebutton.AutoButtonColor = false
 					deletebutton.ZIndex = 2
-					deletebutton.Image = downloadfeftyAsset("fefty/assets/AddRemoveIcon1.png")
+					deletebutton.Image = downloadVapeAsset("vape/assets/AddRemoveIcon1.png")
 					deletebutton.Position = UDim2.new(1, -16, 0, 14)
 					deletebutton.Parent = itemframe
 					deletebutton.MouseButton1Click:Connect(function()
@@ -6361,7 +6361,7 @@ if shared.feftyExecuted then
 		image.BackgroundTransparency = 1
 		image.Name = "Frame"
 		image.ScaleType = Enum.ScaleType.Slice
-		image.Image = downloadfeftyAsset("fefty/assets/NotificationBackground.png")
+		image.Image = downloadVapeAsset("vape/assets/NotificationBackground.png")
 		image.Size = UDim2.new(1, 61, 0, 159)
 		image.Parent = frame
 		local uicorner = Instance.new("UICorner")
@@ -6379,12 +6379,12 @@ if shared.feftyExecuted then
 		frame2.ScaleType = Enum.ScaleType.Slice
 		frame2.Position = UDim2.new(0, 63, 1, -36)
 		frame2.ZIndex = 2
-		frame2.Image = downloadfeftyAsset("fefty/assets/NotificationBar.png")
+		frame2.Image = downloadVapeAsset("vape/assets/NotificationBar.png")
 		frame2.BorderSizePixel = 0
 		frame2.Parent = image
 		local icon = Instance.new("ImageLabel")
 		icon.Name = "IconLabel"
-		icon.Image = downloadfeftyAsset(customicon and "fefty/"..customicon or "fefty/assets/InfoNotification.png")
+		icon.Image = downloadVapeAsset(customicon and "vape/"..customicon or "vape/assets/InfoNotification.png")
 		icon.BackgroundTransparency = 1
 		icon.Position = UDim2.new(0, -6, 0, -6)
 		icon.Size = UDim2.new(0, 60, 0, 60)

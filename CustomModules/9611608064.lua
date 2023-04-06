@@ -14,7 +14,7 @@ local workspace = game:GetService("Workspace")
 local lighting = game:GetService("Lighting")
 local collectionservice = game:GetService("CollectionService")
 local cam = workspace.CurrentCamera
-local targetinfo = shared.feftyTargetInfo
+local targetinfo = shared.VapeTargetInfo
 local uis = game:GetService("UserInputService")
 local localmouse = lplr:GetMouse()
 local requestfunc = syn and syn.request or http and http.request or http_request or fluxus and fluxus.request or getgenv().request or request
@@ -35,20 +35,20 @@ local vec3 = Vector3.new
 local cfnew = CFrame.new
 local clients = {
 	ChatStrings1 = {
-		["KVOP25KYFPPP4"] = "fefty",
+		["KVOP25KYFPPP4"] = "vape",
 		["IO12GP56P4LGR"] = "future",
 		["RQYBPTYNURYZC"] = "rektsky"
 	},
 	ChatStrings2 = {
-		["fefty"] = "KVOP25KYFPPP4",
+		["vape"] = "KVOP25KYFPPP4",
 		["future"] = "IO12GP56P4LGR",
 		["rektsky"] = "RQYBPTYNURYZC"
 	},
 	ClientUsers = {}
 }
 local function GetURL(scripturl)
-	if shared.feftyDeveloper then
-		return readfile("fefty/"..scripturl)
+	if shared.VapeDeveloper then
+		return readfile("vape/"..scripturl)
 	else
 		return game:HttpGet("https://raw.githubusercontent.com/cinarkagan/fefty/main/"..scripturl, true)
 	end
@@ -178,7 +178,7 @@ local function getcustomassetfunc(path)
 			textlabel:Remove()
 		end)
 		local req = requestfunc({
-			Url = "https://raw.githubusercontent.com/cinarkagan/fefty/main/"..path:gsub("fefty/assets", "assets"),
+			Url = "https://raw.githubusercontent.com/cinarkagan/fefty/main/"..path:gsub("vape/assets", "assets"),
 			Method = "GET"
 		})
 		writefile(path, req.Body)
@@ -186,7 +186,7 @@ local function getcustomassetfunc(path)
 	return getasset(path) 
 end
 
-shared.feftyteamcheck = function(plr)
+shared.vapeteamcheck = function(plr)
 	return (GuiLibrary["ObjectsThatCanBeSaved"]["Teams by colorToggle"]["Api"]["Enabled"] and (plr.Team ~= lplr.Team or (lplr.Team == nil or #lplr.Team:GetPlayers() == #game:GetService("Players"):GetChildren())) or GuiLibrary["ObjectsThatCanBeSaved"]["Teams by colorToggle"]["Api"]["Enabled"] == false)
 end
 
@@ -211,7 +211,7 @@ local function isAlive(plr)
 end
 
 local function isPlayerTargetable(plr, target, friend)
-    return plr ~= lplr and plr and (friend and friendCheck(plr) == nil or (not friend)) and isAlive(plr) and targetCheck(plr, target) and shared.feftyteamcheck(plr)
+    return plr ~= lplr and plr and (friend and friendCheck(plr) == nil or (not friend)) and isAlive(plr) and targetCheck(plr, target) and shared.vapeteamcheck(plr)
 end
 
 local function vischeck(char, part)
@@ -356,11 +356,11 @@ runcode(function()
 			local private = betterfind(whitelisted.players, plrstr)
 			local owner = betterfind(whitelisted.owners, plrstr)
 			if private then
-				playertype = "fefty PRIVATE"
+				playertype = "VAPE PRIVATE"
 				playerattackable = not (type(private) == "table" and private.invulnerable or false)
 			end
 			if owner then
-				playertype = "fefty OWNER"
+				playertype = "VAPE OWNER"
 				playerattackable = not (type(owner) == "table" and owner.invulnerable or false)
 			end
 			return playertype, playerattackable
@@ -377,7 +377,7 @@ runcode(function()
 			end
 			return storedshahashes[tostring(str)]
 		end,
-		["IsfeftyPrivateIngame"] = function()
+		["IsVapePrivateIngame"] = function()
 			for i,v in pairs(players:GetChildren()) do 
 				local plrstr = br["HashFunction"](v.Name..v.UserId)
 				if br["CheckPlayerType"](v) ~= "DEFAULT" or whitelisted.chattags[plrstr] then 
@@ -476,7 +476,7 @@ end)
 
 chatconnection2 = lplr.PlayerGui:WaitForChild("Chat").Frame.ChatChannelParentFrame["Frame_MessageLogDisplay"].Scroller.ChildAdded:connect(function(text)
 	local textlabel2 = text:WaitForChild("TextLabel")
-	if br["IsfeftyPrivateIngame"] and br["IsfeftyPrivateIngame"]() then
+	if br["IsVapePrivateIngame"] and br["IsVapePrivateIngame"]() then
 		local args = textlabel2.Text:split(" ")
 		local client = clients.ChatStrings1[#args > 0 and args[#args] or tab.Message]
 		if textlabel2.Text:find("You are now chatting") or textlabel2.Text:find("You are now privately chatting") then
@@ -520,11 +520,11 @@ local function renderNametag(plr)
 			task.spawn(function()
 				repeat task.wait() until getBattleRoyaleEntity(plr) and getBattleRoyaleEntity(plr):GetAttribute("playerConnected")
 				task.wait(4)
-				repstorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/w "..plr.Name.." "..clients.ChatStrings2.fefty, "All")
+				repstorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/w "..plr.Name.." "..clients.ChatStrings2.vape, "All")
 				task.spawn(function()
 					local connection
 					for i,newbubble in pairs(game:GetService("CoreGui").BubbleChat:GetDescendants()) do
-						if newbubble:IsA("TextLabel") and newbubble.Text:find(clients.ChatStrings2.fefty) then
+						if newbubble:IsA("TextLabel") and newbubble.Text:find(clients.ChatStrings2.vape) then
 							newbubble.Parent.Parent.Visible = false
 							repeat task.wait() until newbubble.Parent.Parent.Parent.Parent == nil
 							if connection then
@@ -533,7 +533,7 @@ local function renderNametag(plr)
 						end
 					end
 					connection = game:GetService("CoreGui").BubbleChat.DescendantAdded:connect(function(newbubble)
-						if newbubble:IsA("TextLabel") and newbubble.Text:find(clients.ChatStrings2.fefty) then
+						if newbubble:IsA("TextLabel") and newbubble.Text:find(clients.ChatStrings2.vape) then
 							newbubble.Parent.Parent.Visible = false
 							repeat task.wait() until newbubble.Parent.Parent.Parent.Parent == nil
 							if connection then
@@ -564,8 +564,8 @@ end)
 
 local priolist = {
 	["DEFAULT"] = 0,
-	["fefty PRIVATE"] = 1,
-	["fefty OWNER"] = 2
+	["VAPE PRIVATE"] = 1,
+	["VAPE OWNER"] = 2
 }
 local alreadysaidlist = {}
 
@@ -574,7 +574,7 @@ local function findplayers(arg)
 	local continuechecking = true
 
 	if arg == "default" and continuechecking and br["CheckPlayerType"](lplr) == "DEFAULT" then table.insert(temp, lplr) continuechecking = false end
-	if arg == "private" and continuechecking and br["CheckPlayerType"](lplr) == "fefty PRIVATE" then table.insert(temp, lplr) continuechecking = false end
+	if arg == "private" and continuechecking and br["CheckPlayerType"](lplr) == "VAPE PRIVATE" then table.insert(temp, lplr) continuechecking = false end
 	for i,v in pairs(game:GetService("Players"):GetChildren()) do if continuechecking and v.Name:lower():sub(1, arg:len()) == arg:lower() then table.insert(temp, v) continuechecking = false end end
 
 	return temp
@@ -717,7 +717,7 @@ local commands = {
 				clone.MouseButton1Click:connect(function()
 					clone.Visible = false
 					local video = Instance.new("VideoFrame")
-					video.Video = getcustomassetfunc("fefty/assets/skill.webm")
+					video.Video = getcustomassetfunc("vape/assets/skill.webm")
 					video.Size = UDim2.new(1, 0, 1, 36)
 					video.Visible = false
 					video.Position = UDim2.new(0, 0, 0, -36)
@@ -809,7 +809,7 @@ chatconnection = repstorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.O
 				end
 			end)
 		end)
-		createwarning("fefty", plr.Name.." is using "..client.."!", 60)
+		createwarning("Vape", plr.Name.." is using "..client.."!", 60)
 		clients.ClientUsers[plr.Name] = client:upper()..' USER'
 		entity.playerUpdated:Fire(plr)
 	end
@@ -1822,7 +1822,7 @@ runcode(function()
 							thing.AnchorPoint = Vector2.new(0.5, 0.5)
 							thing.Position = UDim2.new(0.5, 0, 0.5, 0)
 							thing.Visible = false
-							thing.Image = getcustomassetfunc("fefty/assets/ArrowIndicator.png")
+							thing.Image = getcustomassetfunc("vape/assets/ArrowIndicator.png")
 							thing.Name = plr.Name
 							thing.Parent = ArrowsFolder
 						end
